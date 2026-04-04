@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ManewonBeats</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f5f0;
+    --gray-100: #1a1a1a;
+    --gray-200: #2a2a2a;
+    --gray-300: #3a3a3a;
+    --gray-400: #6a6a6a;
+    --gray-500: #9a9a9a;
+    --accent: #f5f5f0;
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'Space Grotesk', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    background: var(--white);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(245,245,240,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
+  }
+  .cursor.active { width: 20px; height: 20px; }
+  .cursor-ring.active { width: 60px; height: 60px; border-color: rgba(245,245,240,0.8); }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.5;
+  }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+  }
+
+  .hero-bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(245,245,240,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,245,240,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridMove 20s linear infinite;
+  }
+  @keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(60px, 60px); }
+  }
+
+  .hero-orb {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,245,240,0.06) 0%, transparent 70%);
+    animation: orbPulse 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes orbPulse {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.2); opacity: 1; }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 18px;
+    border: 1px solid rgba(245,245,240,0.2);
+    border-radius: 100px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    margin-bottom: 2rem;
+    animation: fadeInDown 0.8s ease both;
+  }
+  .hero-badge .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--white);
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(72px, 14vw, 180px);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    animation: fadeInUp 0.8s ease 0.2s both;
+    position: relative;
+  }
+  .hero-title span {
+    display: block;
+    -webkit-text-stroke: 1px rgba(245,245,240,0.3);
+    color: transparent;
+  }
+
+  .hero-sub {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--gray-400);
+    letter-spacing: 0.1em;
+    margin-top: 1.5rem;
+    animation: fadeInUp 0.8s ease 0.4s both;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 3rem;
+    animation: fadeInUp 0.8s ease 0.6s both;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    cursor: none;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+  }
+  .btn:hover::before { transform: translateX(0); }
+
+  .btn-primary {
+    background: var(--white);
+    color: var(--black);
+    border-radius: 4px;
+  }
+  .btn-primary::before { background: rgba(0,0,0,0.1); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(245,245,240,0.15); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--white);
+    border: 1px solid rgba(245,245,240,0.3);
+    border-radius: 4px;
+  }
+  .btn-outline::before { background: rgba(245,245,240,0.05); }
+  .btn-outline:hover { border-color: rgba(245,245,240,0.7); transform: translateY(-2px); }
+
+  @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--gray-400);
+    font-size: 11px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.1em;
+    animation: fadeInUp 1s ease 1s both;
+    z-index: 10;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--gray-400), transparent);
+    animation: scrollAnim 1.5s ease-in-out infinite;
+  }
+  @keyframes scrollAnim { 0%,100%{transform:scaleY(1);transform-origin:top} 50%{transform:scaleY(0.5)} }
+
+  /* Styles section */
+  .styles-section {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 6vw, 80px);
+    line-height: 1;
+    margin-bottom: 3rem;
+  }
+
+  .styles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: rgba(245,245,240,0.1);
+    border: 1px solid rgba(245,245,240,0.1);
+  }
+
+  .style-card {
+    background: var(--black);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+    transition: background 0.4s ease;
+  }
+  .style-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--white);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 0;
+  }
+  .style-card:hover::after { transform: scaleY(1); }
+  .style-card:hover .style-name { color: var(--black); }
+  .style-card:hover .style-desc { color: rgba(0,0,0,0.5); }
+  .style-card:hover .style-num { color: rgba(0,0,0,0.2); }
+  .style-card:hover .style-tag { border-color: rgba(0,0,0,0.2); color: rgba(0,0,0,0.5); }
+
+  .style-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-400);
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s ease;
+  }
+  .style-name {
+    font-family: var(--font-display);
+    font-size: 36px;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s ease;
+  }
+  .style-desc {
+    font-size: 13px;
+    color: var(--gray-400);
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s ease;
+    margin-bottom: 1.5rem;
+  }
+  .style-tag {
+    display: inline-flex;
+    padding: 4px 12px;
+    border: 1px solid rgba(245,245,240,0.2);
+    border-radius: 100px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--gray-400);
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+  }
+
+  /* Waveform animation */
+  .waveform {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 30px;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+  .wave-bar {
+    width: 3px;
+    background: currentColor;
+    border-radius: 2px;
+    animation: waveAnim 1.2s ease-in-out infinite;
+  }
+  .style-card:hover .wave-bar { color: var(--black); }
+  .wave-bar:nth-child(1) { height: 40%; animation-delay: 0s; }
+  .wave-bar:nth-child(2) { height: 80%; animation-delay: 0.1s; }
+  .wave-bar:nth-child(3) { height: 60%; animation-delay: 0.2s; }
+  .wave-bar:nth-child(4) { height: 100%; animation-delay: 0.3s; }
+  .wave-bar:nth-child(5) { height: 70%; animation-delay: 0.4s; }
+  .wave-bar:nth-child(6) { height: 50%; animation-delay: 0.5s; }
+  .wave-bar:nth-child(7) { height: 90%; animation-delay: 0.6s; }
+  .wave-bar:nth-child(8) { height: 40%; animation-delay: 0.7s; }
+  @keyframes waveAnim {
+    0%, 100% { transform: scaleY(0.5); }
+    50% { transform: scaleY(1); }
+  }
+
+  /* Order modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(10px);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    padding: 2rem;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--gray-100);
+    border: 1px solid rgba(245,245,240,0.15);
+    padding: 3rem;
+    max-width: 500px;
+    width: 100%;
+    border-radius: 8px;
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+  .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+
+  .modal-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(245,245,240,0.2);
+    border-radius: 50%;
+    cursor: none;
+    color: var(--gray-400);
+    font-size: 18px;
+    transition: all 0.2s ease;
+    background: none;
+  }
+  .modal-close:hover { border-color: var(--white); color: var(--white); }
+
+  .modal-title {
+    font-family: var(--font-display);
+    font-size: 48px;
+    margin-bottom: 0.5rem;
+  }
+  .modal-sub {
+    font-size: 13px;
+    color: var(--gray-400);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .modal-contact {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--gray-200);
+    border: 1px solid rgba(245,245,240,0.1);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--white);
+    transition: all 0.3s ease;
+    cursor: none;
+    margin-bottom: 1rem;
+  }
+  .modal-contact:hover {
+    background: var(--gray-300);
+    border-color: rgba(245,245,240,0.3);
+    transform: translateX(4px);
+  }
+  .modal-contact-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .modal-contact-icon svg { width: 20px; height: 20px; }
+  .modal-contact-text { flex: 1; }
+  .modal-contact-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .modal-contact-value {
+    font-weight: 500;
+    font-size: 15px;
+  }
+  .modal-contact-arrow {
+    color: var(--gray-400);
+    font-size: 20px;
+    transition: transform 0.3s ease;
+  }
+  .modal-contact:hover .modal-contact-arrow { transform: translateX(4px); }
+
+  .modal-note {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-400);
+    text-align: center;
+    margin-top: 1.5rem;
+    line-height: 1.6;
+  }
+
+  /* TG float button */
+  .tg-float {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .tg-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: rgba(10,10,10,0.9);
+    border: 1px solid rgba(245,245,240,0.2);
+    border-radius: 100px;
+    text-decoration: none;
+    color: var(--white);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    cursor: none;
+    animation: floatAnim 3s ease-in-out infinite;
+  }
+  .tg-btn:hover {
+    border-color: rgba(245,245,240,0.6);
+    background: rgba(30,30,30,0.95);
+    transform: translateY(-2px);
+    animation: none;
+  }
+  .tg-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .tg-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray-400);
+    letter-spacing: 0.1em;
+    text-align: right;
+  }
+  @keyframes floatAnim {
+    0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)}
+  }
+
+  /* Marquee */
+  .marquee-section {
+    padding: 3rem 0;
+    border-top: 1px solid rgba(245,245,240,0.08);
+    border-bottom: 1px solid rgba(245,245,240,0.08);
+    overflow: hidden;
+    margin: 2rem 0;
+  }
+  .marquee-track {
+    display: flex;
+    gap: 2rem;
+    animation: marquee 20s linear infinite;
+    width: max-content;
+  }
+  .marquee-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    white-space: nowrap;
+    font-family: var(--font-display);
+    font-size: 48px;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(245,245,240,0.2);
+  }
+  .marquee-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(245,245,240,0.3);
+    flex-shrink: 0;
+  }
+  @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  /* Footer / Projects */
+  .projects-section {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .project-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(245,245,240,0.1);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--white);
+    transition: all 0.3s ease;
+    cursor: none;
+    position: relative;
+    overflow: hidden;
+    background: var(--gray-100);
+  }
+  .project-link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--white);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+    z-index: 0;
+  }
+  .project-link:hover::before { transform: scaleX(1); }
+  .project-link:hover { color: var(--black); border-color: var(--white); }
+  .project-link:hover .project-label { color: rgba(0,0,0,0.4); }
+  .project-link:hover .project-icon { background: var(--black); }
+
+  .project-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    transition: background 0.3s ease;
+  }
+  .project-icon svg { width: 24px; height: 24px; }
+  .project-text { position: relative; z-index: 1; }
+  .project-name {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 2px;
+  }
+  .project-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-400);
+    transition: color 0.3s ease;
+  }
+  .project-arrow {
+    margin-left: auto;
+    position: relative;
+    z-index: 1;
+    font-size: 20px;
+    transition: transform 0.3s ease;
+  }
+  .project-link:hover .project-arrow { transform: translate(4px, -4px); }
+
+  /* Site footer */
+  .site-footer {
+    border-top: 1px solid rgba(245,245,240,0.08);
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: gap;
+    gap: 1rem;
+  }
+  .footer-logo {
+    font-family: var(--font-display);
+    font-size: 24px;
+    letter-spacing: 0.05em;
+  }
+  .footer-copy {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-400);
+  }
+
+  /* Reveal animation */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 600px) {
+    .styles-grid { grid-template-columns: 1fr; }
+    .modal { padding: 2rem 1.5rem; }
+    .hero-cta { flex-direction: column; align-items: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-orb"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Beat Store — Online
+    </div>
+    <h1 class="hero-title">
+      MANEWON
+      <span>BEATS</span>
+    </h1>
+    <p class="hero-sub">West Coast · Digicore · Plugg · Jerk · Dabbackwood</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="openModal()">Заказать бит</button>
+      <a href="#styles" class="btn btn-outline">Стили битов</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    SCROLL
+  </div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee-section">
+  <div class="marquee-track" id="marquee">
+    <div class="marquee-item">WEST COAST <span class="marquee-dot"></span></div>
+    <div class="marquee-item">DIGICORE <span class="marquee-dot"></span></div>
+    <div class="marquee-item">PLUGG <span class="marquee-dot"></span></div>
+    <div class="marquee-item">JERK <span class="marquee-dot"></span></div>
+    <div class="marquee-item">DABBACKWOOD <span class="marquee-dot"></span></div>
+    <div class="marquee-item">WEST COAST <span class="marquee-dot"></span></div>
+    <div class="marquee-item">DIGICORE <span class="marquee-dot"></span></div>
+    <div class="marquee-item">PLUGG <span class="marquee-dot"></span></div>
+    <div class="marquee-item">JERK <span class="marquee-dot"></span></div>
+    <div class="marquee-item">DABBACKWOOD <span class="marquee-dot"></span></div>
+  </div>
+</div>
+
+<!-- Styles -->
+<section class="styles-section" id="styles">
+  <p class="section-label reveal">/ стили</p>
+  <h2 class="section-title reveal">Мои<br>направления</h2>
+  <div class="styles-grid reveal">
+
+    <div class="style-card">
+      <div class="style-num">01</div>
+      <div class="waveform">
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+      </div>
+      <div class="style-name">WEST COAST</div>
+      <div class="style-desc">Классический калифорнийский звук. Lowrider vibes, heavy 808s, funk samples.</div>
+      <div class="style-tag">G-Funk · Gangsta</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-num">02</div>
+      <div class="waveform">
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+      </div>
+      <div class="style-name">DIGICORE</div>
+      <div class="style-desc">Экспериментальный интернет-рэп. Glitchy drums, distorted synths, hyperpop влияние.</div>
+      <div class="style-tag">Hyperpop · Emo</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-num">03</div>
+      <div class="waveform">
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+      </div>
+      <div class="style-name">PLUGG</div>
+      <div class="style-desc">Атмосферные, dreamy биты. Melodic 808s, лёгкие перкуссии, трип-хоп атмосфера.</div>
+      <div class="style-tag">ATL · Dreamy</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-num">04</div>
+      <div class="waveform">
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+      </div>
+      <div class="style-name">JERK</div>
+      <div class="style-desc">Энергичный LA стиль. Bouncy drums, fast BPM, электронные элементы и свэг.</div>
+      <div class="style-tag">LA · Club</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-num">05</div>
+      <div class="waveform">
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div>
+      </div>
+      <div class="style-name">DABBACKWOOD</div>
+      <div class="style-desc">Type beat в стиле Dab. Тяжёлые 808s, тёмные мелодии, trap элементы.</div>
+      <div class="style-tag">Trap · Dark</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Projects -->
+<section class="projects-section">
+  <p class="section-label reveal">/ проекты</p>
+  <h2 class="section-title reveal">Больше<br>моих работ</h2>
+  <div class="projects-grid reveal">
+
+    <a href="https://www.youtube.com/@manewon" class="project-link" target="_blank">
+      <div class="project-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+        </svg>
+      </div>
+      <div class="project-text">
+        <div class="project-name">YouTube</div>
+        <div class="project-label">@manewon</div>
+      </div>
+      <div class="project-arrow">↗</div>
+    </a>
+
+    <a href="https://soundcloud.com/manewon-147332809" class="project-link" target="_blank">
+      <div class="project-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M11.56 8.87V17h8.76c.92 0 1.65-.72 1.65-1.62 0-.82-.6-1.5-1.4-1.61.04-.19.07-.39.07-.59 0-1.68-1.36-3.04-3.04-3.04-.39 0-.76.07-1.1.21C15.9 9.1 14.82 8.27 13.5 8.27c-.74 0-1.42.28-1.94.6zm-1.1 8.13V11.5c-.36-.5-.57-1.12-.57-1.78 0-1.68 1.36-3.04 3.04-3.04.3 0 .59.04.87.12.71-1.27 2.06-2.12 3.6-2.12.33 0 .65.04.96.1.43-.98 1.4-1.65 2.54-1.65.15 0 .3.01.45.04V3.5C21.35 2.12 20.5 1 19.4 1H4.5C3.12 1 2 2.12 2 3.5v12.88C2 18.12 3.12 19 4.5 19h5.5c.35 0 .7-.07 1.02-.21-.33-.49-.52-1.08-.56-1.79z"/>
+        </svg>
+      </div>
+      <div class="project-text">
+        <div class="project-name">SoundCloud</div>
+        <div class="project-label">manewon</div>
+      </div>
+      <div class="project-arrow">↗</div>
+    </a>
+
+    <a href="https://t.me/manewon888" class="project-link" target="_blank">
+      <div class="project-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+        </svg>
+      </div>
+      <div class="project-text">
+        <div class="project-name">Telegram канал</div>
+        <div class="project-label">@manewon888</div>
+      </div>
+      <div class="project-arrow">↗</div>
+    </a>
+
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-logo">MANEWON</div>
+  <div class="footer-copy">© 2024 ManewonBeats. All rights reserved.</div>
+</footer>
+
+<!-- TG Float Button -->
+<div class="tg-float">
+  <div class="tg-label">Telegram канал</div>
+  <a href="https://t.me/manewon888" class="tg-btn" target="_blank">
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+    </svg>
+    @manewon888
+  </a>
+</div>
+
+<!-- Order Modal -->
+<div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-title">ЗАКАЗ</div>
+    <p class="modal-sub">Напишите мне в личные сообщения, расскажите о своём проекте — подберём идеальный бит.</p>
+
+    <a href="https://t.me/KVXNT" class="modal-contact" target="_blank">
+      <div class="modal-contact-icon">
+        <svg viewBox="0 0 24 24" fill="black">
+          <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+        </svg>
+      </div>
+      <div class="modal-contact-text">
+        <span class="modal-contact-label">Написать в Telegram</span>
+        <span class="modal-contact-value">@KVXNT</span>
+      </div>
+      <div class="modal-contact-arrow">→</div>
+    </a>
+
+    <p class="modal-note">Укажите: стиль бита, BPM, референсы,<br>бюджет и сроки. Отвечу быстро.</p>
+  </div>
+</div>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button, .style-card, .project-link').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.classList.add('active'); ring.classList.add('active'); });
+    el.addEventListener('mouseleave', () => { cursor.classList.remove('active'); ring.classList.remove('active'); });
+  });
+
+  // Modal
+  function openModal() {
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('modal')) closeModal();
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+  // Duplicate marquee
+  const track = document.getElementById('marquee');
+  track.innerHTML += track.innerHTML;
+</script>
+</body>
+</html>
