@@ -4,10 +4,87 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ManewonBeats</title>
- <link rel="icon" type="image/png" href="logo.png">
+<link rel="icon" type="image/png" href="logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  #preloader {
+  position: fixed;
+  inset: 0;
+  background: var(--black);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.preloader-logo {
+  font-family: var(--font-display);
+  font-size: 48px;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  margin-bottom: 1.5rem;
+}
+.preloader-logo span {
+  display: block;
+  font-size: 24px;
+  -webkit-text-stroke: 1px rgba(245,245,240,0.3);
+  color: transparent;
+}
+
+.preloader-loader {
+  display: flex;
+  gap: 8px;
+}
+.preloader-loader div {
+  width: 12px;
+  height: 12px;
+  background: var(--white);
+  border-radius: 50%;
+  animation: bounce 0.6s infinite alternate;
+}
+.preloader-loader div:nth-child(2) { animation-delay: 0.1s; }
+.preloader-loader div:nth-child(3) { animation-delay: 0.2s; }
+
+@keyframes bounce {
+  to { transform: translateY(-15px); opacity: 0.7; }
+}
+
+.preloader-logo {
+  font-family: var(--font-display);
+  font-size: 48px;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  margin-bottom: 2rem;
+}
+.preloader-logo span {
+  display: block;
+  font-size: 24px;
+  -webkit-text-stroke: 1px rgba(245,245,240,0.3);
+  color: transparent;
+}
+
+.preloader-loader {
+  display: flex;
+  gap: 8px;
+}
+.preloader-loader div {
+  width: 12px;
+  height: 12px;
+  background: var(--white);
+  border-radius: 50%;
+  animation: bounce 0.6s infinite alternate;
+}
+.preloader-loader div:nth-child(2) { animation-delay: 0.2s; }
+.preloader-loader div:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  to { transform: translateY(-15px); opacity: 0.7; }
+}
 
   :root {
     --black: #0a0a0a;
@@ -688,6 +765,13 @@
 </head>
 <body>
 
+  <div id="preloader">
+  <div class="preloader-logo">MANEWON<span>BEATS</span></div>
+  <div class="preloader-loader">
+    <div></div><div></div><div></div>
+  </div>
+</div>
+
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 
@@ -890,6 +974,16 @@
 </div>
 
 <script>
+
+ 
+ 
+setTimeout(() => {
+  const preloader = document.getElementById('preloader');
+  preloader.style.opacity = 0;
+  setTimeout(() => preloader.remove(), 500);
+}, 2000);
+ 
+ 
   // Cursor
   const cursor = document.getElementById('cursor');
   const ring = document.getElementById('cursorRing');
