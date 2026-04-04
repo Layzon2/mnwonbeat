@@ -23,7 +23,6 @@
     --safe-left: env(safe-area-inset-left, 0px);
     --safe-right: env(safe-area-inset-right, 0px);
 
-    /* iOS 26 Liquid Glass */
     --glass-bg: rgba(255,255,255,0.08);
     --glass-bg-hover: rgba(255,255,255,0.13);
     --glass-border: rgba(255,255,255,0.18);
@@ -134,17 +133,14 @@
   @media (pointer: fine) { body { cursor: none; } .cursor, .cursor-ring { display: block; } }
   @media (pointer: coarse) { body { cursor: auto; } .cursor, .cursor-ring { display: none !important; } }
 
-  /* ===== CURSOR ===== */
   .cursor { position: fixed; width: 10px; height: 10px; background: var(--text); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.25s, height 0.25s, background var(--transition); mix-blend-mode: var(--cursor-blend); }
   .cursor-ring { position: fixed; width: 36px; height: 36px; border: 1px solid rgba(120,120,120,0.35); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s, border-color 0.3s; }
   .cursor.hovering { width: 18px; height: 18px; }
   .cursor-ring.hovering { width: 56px; height: 56px; }
 
-  /* ===== NOISE ===== */
   body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"); pointer-events: none; z-index: 9000; opacity: 0.25; }
   [data-theme="light"] body::before { opacity: 0.1; }
 
-  /* ===== PRELOADER ===== */
   #preloader { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 99999; transition: opacity 0.6s ease, transform 0.6s ease; }
   #preloader.out { opacity: 0; transform: scale(1.04); pointer-events: none; }
   .pre-logo { font-family: var(--font-display); font-size: clamp(40px, 10vw, 64px); color: var(--text); letter-spacing: 0.05em; margin-bottom: 0.5rem; animation: preIn 0.6s ease both; }
@@ -154,7 +150,6 @@
   @keyframes preLoad { to { width: 100%; } }
   @keyframes preIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* ===== iOS 26 LIQUID GLASS MIXIN ===== */
   .glass {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
@@ -164,15 +159,7 @@
     position: relative;
     overflow: hidden;
   }
-  .glass::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--glass-specular);
-    pointer-events: none;
-    z-index: 0;
-    border-radius: inherit;
-  }
+  .glass::before { content: ''; position: absolute; inset: 0; background: var(--glass-specular); pointer-events: none; z-index: 0; border-radius: inherit; }
   .glass > * { position: relative; z-index: 1; }
 
   .glass-heavy {
@@ -184,18 +171,9 @@
     position: relative;
     overflow: hidden;
   }
-  .glass-heavy::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--glass-specular);
-    pointer-events: none;
-    z-index: 0;
-    border-radius: inherit;
-  }
+  .glass-heavy::before { content: ''; position: absolute; inset: 0; background: var(--glass-specular); pointer-events: none; z-index: 0; border-radius: inherit; }
   .glass-heavy > * { position: relative; z-index: 1; }
 
-  /* ===== MOBILE NAV — iOS 26 Glass ===== */
   .mob-nav {
     display: none;
     position: fixed;
@@ -216,7 +194,6 @@
   .mob-nav-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent-2); opacity: 0; transition: opacity 0.2s; margin-top: -2px; }
   .mob-nav-item.active .mob-nav-dot { opacity: 1; }
 
-  /* ===== TOP BAR — iOS 26 Glass ===== */
   .top-bar {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -240,7 +217,6 @@
   .top-bar-logo span { -webkit-text-stroke: 1px var(--stroke-outline); color: transparent; }
   .top-bar-right { display: flex; align-items: center; gap: 10px; }
 
-  /* ===== THEME TOGGLE — iOS 26 Glass ===== */
   .theme-toggle {
     display: flex; align-items: center; gap: 8px;
     padding: 7px 14px;
@@ -267,7 +243,6 @@
   .toggle-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; color: var(--text-muted); text-transform: uppercase; transition: color var(--transition); }
   @media (max-width: 480px) { .toggle-label { display: none; } }
 
-  /* ===== HERO ===== */
   .hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; padding: 100px 2rem 6rem; }
   .hero-bg-grid { position: absolute; inset: 0; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: 60px 60px; animation: gridMove 24s linear infinite; }
   @keyframes gridMove { 0%{transform:translate(0,0)} 100%{transform:translate(60px,60px)} }
@@ -306,7 +281,6 @@
   .scroll-line { width: 1px; height: 36px; background: linear-gradient(to bottom, var(--text-dim), transparent); animation: scrollAnim 1.5s ease-in-out infinite; }
   @keyframes scrollAnim { 0%,100%{transform:scaleY(1);transform-origin:top} 50%{transform:scaleY(0.4)} }
 
-  /* ===== MARQUEE ===== */
   .marquee-section { padding: 2.5rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; transition: border-color var(--transition); }
   .marquee-track { display: flex; gap: 2rem; animation: marquee 22s linear infinite; width: max-content; }
   .marquee-section:hover .marquee-track { animation-play-state: paused; }
@@ -314,12 +288,10 @@
   .marquee-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border-hover); flex-shrink: 0; }
   @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
-  /* ===== SECTION COMMON ===== */
   .section-wrap { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; }
   .section-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.75rem; }
   .section-title { font-family: var(--font-display); font-size: clamp(36px, 6vw, 80px); line-height: 1; margin-bottom: 3rem; }
 
-  /* ===== STYLES GRID ===== */
   .styles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
   [data-theme="light"] .styles-grid { background: transparent; border: none; gap: 12px; }
   .style-card { background: var(--surface); padding: 2.5rem; position: relative; overflow: hidden; cursor: pointer; transition: background var(--transition); -webkit-tap-highlight-color: transparent; }
@@ -340,7 +312,6 @@
   .wave-bar:nth-child(1){height:40%;animation-delay:0s} .wave-bar:nth-child(2){height:80%;animation-delay:.1s} .wave-bar:nth-child(3){height:60%;animation-delay:.2s} .wave-bar:nth-child(4){height:100%;animation-delay:.3s} .wave-bar:nth-child(5){height:70%;animation-delay:.4s} .wave-bar:nth-child(6){height:50%;animation-delay:.5s} .wave-bar:nth-child(7){height:90%;animation-delay:.6s} .wave-bar:nth-child(8){height:40%;animation-delay:.7s}
   @keyframes waveAnim { 0%,100%{transform:scaleY(0.5)} 50%{transform:scaleY(1)} }
 
-  /* ===== PRICING ===== */
   .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
   .pricing-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 2rem; position: relative; overflow: hidden; transition: all var(--transition); box-shadow: var(--shadow); }
   .pricing-card.featured { border-color: var(--border-hover); background: var(--surface2); }
@@ -359,7 +330,6 @@
   .pricing-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
   .pricing-btn:active { transform: scale(0.97); }
 
-  /* ===== PROJECTS ===== */
   .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
   .project-link { display: flex; align-items: center; gap: 1rem; padding: 1.25rem 1.5rem; border: 1px solid var(--border); border-radius: var(--radius-card); text-decoration: none; color: var(--text); transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden; background: var(--project-bg); box-shadow: var(--shadow); -webkit-tap-highlight-color: transparent; }
   .project-link::before { content: ''; position: absolute; inset: 0; background: var(--card-hover-bg); transform: scaleX(0); transform-origin: left; transition: transform 0.35s ease; z-index: 0; }
@@ -376,7 +346,6 @@
   .project-arrow { margin-left: auto; position: relative; z-index: 1; font-size: 18px; transition: transform 0.3s ease; }
   .project-link:hover .project-arrow { transform: translate(4px,-4px); }
 
-  /* ===== FAQ ===== */
   .faq-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 0; }
   [data-theme="light"] .faq-list { background: transparent; border: none; gap: 10px; }
   .faq-item { background: var(--surface); overflow: hidden; }
@@ -387,7 +356,6 @@
   .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease; font-size: 13px; color: var(--text-muted); line-height: 1.7; padding: 0 1.5rem; }
   .faq-item.open .faq-a { max-height: 300px; padding: 0 1.5rem 1.25rem; }
 
-  /* ===== PROCESS ===== */
   .process-steps { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); }
   [data-theme="light"] .process-steps { background: transparent; border: none; gap: 10px; }
   .process-step { background: var(--surface); padding: 1.75rem 2rem; display: flex; align-items: flex-start; gap: 1.5rem; position: relative; overflow: hidden; }
@@ -400,7 +368,6 @@
   .process-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; color: var(--text); }
   .process-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
-  /* ===== TOAST — iOS 26 Glass ===== */
   #toast {
     position: fixed; bottom: calc(2rem + var(--safe-bottom));
     left: 50%; transform: translateX(-50%) translateY(20px);
@@ -420,7 +387,7 @@
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ===== MUSIC PLAYER — iOS 26 LIQUID GLASS ===== */
+  /* ===== MUSIC PLAYER ===== */
   .player {
     position: fixed;
     bottom: calc(2rem + var(--safe-bottom));
@@ -445,7 +412,7 @@
     box-shadow: var(--glass-shadow);
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 260px;
+    width: 280px;
     position: relative;
   }
   .player-card::before {
@@ -461,74 +428,26 @@
   @media (max-width: 600px) { .player-card { width: 100%; } }
   .player-card:hover { border-color: var(--glass-border-strong); }
 
-  /* Collapsed state */
-  .player.collapsed .player-card {
-    border-radius: 100px;
-    width: auto;
-  }
-  .player.collapsed .player-expanded { 
-    max-height: 0; 
-    opacity: 0; 
-    overflow: hidden; 
-    pointer-events: none;
-  }
-  .player.collapsed .player-pill {
-    display: flex !important;
-  }
-  .player:not(.collapsed) .player-pill {
-    display: none !important;
-  }
+  .player.collapsed .player-card { border-radius: 100px; width: auto; }
+  .player.collapsed .player-expanded { max-height: 0; opacity: 0; overflow: hidden; pointer-events: none; }
+  .player.collapsed .player-pill { display: flex !important; }
+  .player:not(.collapsed) .player-pill { display: none !important; }
 
-  /* Pill (collapsed) */
-  .player-pill {
-    display: none;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-  }
-  .player-pill-vis {
-    display: flex;
-    align-items: flex-end;
-    gap: 2px;
-    height: 14px;
-  }
-  .player-pill-bar {
-    width: 2px;
-    background: var(--text-muted);
-    border-radius: 1px;
-    transform-origin: bottom;
-  }
+  .player-pill { display: none; align-items: center; gap: 10px; padding: 10px 16px; }
+  .player-pill-vis { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+  .player-pill-bar { width: 2px; background: var(--text-muted); border-radius: 1px; transform-origin: bottom; }
   .player.playing .player-pill-bar { animation: visAnim 0.8s ease-in-out infinite alternate; }
   .player-pill-bar:nth-child(1){height:4px;animation-delay:0s}
   .player-pill-bar:nth-child(2){height:10px;animation-delay:.1s}
   .player-pill-bar:nth-child(3){height:14px;animation-delay:.2s}
   .player-pill-bar:nth-child(4){height:8px;animation-delay:.3s}
   .player-pill-bar:nth-child(5){height:12px;animation-delay:.4s}
-  .player-pill-track {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
-    white-space: nowrap;
-  }
-  .player-pill-btn {
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    background: var(--text);
-    border: none; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--bg);
-    transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
-    -webkit-tap-highlight-color: transparent;
-    flex-shrink: 0;
-  }
+  .player-pill-track { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing: 0.05em; white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+  .player-pill-btn { width: 26px; height: 26px; border-radius: 50%; background: var(--text); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--bg); transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1); -webkit-tap-highlight-color: transparent; flex-shrink: 0; }
   .player-pill-btn:hover { transform: scale(1.12); }
   .player-pill-btn svg { width: 11px; height: 11px; }
 
-  /* Toggle button */
   .player-toggle {
-    position: absolute;
-    top: -36px; right: 0;
     display: flex; align-items: center; gap: 6px;
     padding: 5px 12px;
     background: var(--glass-bg);
@@ -547,6 +466,7 @@
     -webkit-tap-highlight-color: transparent;
     position: relative;
     overflow: hidden;
+    margin-bottom: 6px;
   }
   .player-toggle::before { content: ''; position: absolute; inset: 0; background: var(--glass-specular); pointer-events: none; border-radius: inherit; }
   .player-toggle > * { position: relative; z-index: 1; }
@@ -554,22 +474,15 @@
   .player-toggle-icon { font-size: 10px; transition: transform 0.3s ease; }
   .player.collapsed .player-toggle-icon { transform: rotate(180deg); }
 
-  .player-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 8px 0;
-  }
-  .player-label { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; padding: 6px 8px 0; }
+  .player-label { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); letter-spacing: 0.1em; padding: 10px 16px 0; }
 
-  /* Expanded content */
   .player-expanded {
-    max-height: 400px;
+    max-height: 500px;
     opacity: 1;
     transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
   }
 
-  .player-main { padding: 14px 16px 10px; display: flex; align-items: center; gap: 12px; }
+  .player-main { padding: 10px 16px 8px; display: flex; align-items: center; gap: 12px; }
   .player-art { width: 38px; height: 38px; border-radius: 10px; background: var(--surface2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
   .player-art-inner { width: 100%; height: 100%; background: linear-gradient(135deg, #2a2a2a, #111); display: flex; align-items: center; justify-content: center; border-radius: 10px; overflow: hidden; }
   [data-theme="light"] .player-art-inner { background: linear-gradient(135deg, #e0e0e5, #d0d0d5); }
@@ -579,18 +492,43 @@
   .player.playing .player-vinyl { animation: spin 3s linear infinite; }
   @keyframes spin { to{transform:rotate(360deg)} }
   .player-info { flex: 1; min-width: 0; }
-  .player-track { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; }
+  .player-track { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; }
   .player-artist { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); letter-spacing: 0.05em; margin-top: 1px; }
   .player-play { width: 30px; height: 30px; border-radius: 50%; background: var(--text); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); color: var(--bg); -webkit-tap-highlight-color: transparent; }
   .player-play:hover { transform: scale(1.12); }
   .player-play:active { transform: scale(0.92); }
   .player-play svg { width: 13px; height: 13px; }
   .icon-play { transform: translateX(1px); }
-  .player-progress-wrap { padding: 0 16px 10px; }
+
+  /* Track nav buttons */
+  .player-nav { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 16px 6px; }
+  .player-nav-btn { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.07); border: 1px solid var(--glass-border); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.2s ease; -webkit-tap-highlight-color: transparent; }
+  .player-nav-btn:hover { background: rgba(255,255,255,0.13); color: var(--text); border-color: var(--glass-border-strong); }
+  .player-nav-btn:active { transform: scale(0.9); }
+  .player-nav-btn svg { width: 12px; height: 12px; }
+  .player-track-counter { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); letter-spacing: 0.08em; }
+
+  /* Track list */
+  .player-tracklist { padding: 0 10px 8px; display: flex; flex-direction: column; gap: 2px; }
+  .player-track-item { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 8px; cursor: pointer; transition: background 0.2s ease; -webkit-tap-highlight-color: transparent; }
+  .player-track-item:hover { background: rgba(255,255,255,0.06); }
+  .player-track-item.active { background: rgba(255,255,255,0.1); }
+  .player-track-item.active .track-item-name { color: var(--text); }
+  .track-item-num { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); width: 14px; flex-shrink: 0; text-align: center; }
+  .track-item-name { font-size: 11px; color: var(--text-muted); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.2s; }
+  .track-item-dur { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); flex-shrink: 0; }
+  .track-item-playing { display: flex; align-items: flex-end; gap: 1px; height: 10px; flex-shrink: 0; }
+  .track-item-bar { width: 2px; background: var(--accent-2); border-radius: 1px; }
+  .player-track-item.active .track-item-bar { animation: visAnim 0.7s ease-in-out infinite alternate; }
+  .track-item-bar:nth-child(1){height:4px;animation-delay:0s}
+  .track-item-bar:nth-child(2){height:8px;animation-delay:.12s}
+  .track-item-bar:nth-child(3){height:10px;animation-delay:.24s}
+
+  .player-progress-wrap { padding: 0 16px 8px; }
   .player-timeline { position: relative; height: 3px; background: rgba(255,255,255,0.12); border-radius: 2px; cursor: pointer; margin-bottom: 5px; overflow: hidden; }
   .player-timeline-fill { height: 100%; background: var(--text); border-radius: 2px; width: 0%; transition: width 0.3s linear; pointer-events: none; }
   .player-times { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); }
-  .player-controls { padding: 0 16px 12px; display: flex; align-items: center; gap: 8px; }
+  .player-controls { padding: 0 16px 10px; display: flex; align-items: center; gap: 8px; }
   .player-mute { width: 22px; height: 22px; background: none; border: none; cursor: pointer; color: var(--text-dim); display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: color 0.2s, background 0.2s; flex-shrink: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   .player-mute:hover { color: var(--text); background: rgba(255,255,255,0.08); }
   .player-mute svg { width: 13px; height: 13px; }
@@ -598,14 +536,12 @@
   .player-volume::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--text); cursor: pointer; transition: transform 0.2s; }
   .player-volume::-webkit-slider-thumb:hover { transform: scale(1.3); }
   .player-volume::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--text); border: none; }
-  .player-vis { display: flex; align-items: flex-end; gap: 2px; height: 14px; padding: 0 16px 10px; }
+  .player-vis { display: flex; align-items: flex-end; gap: 2px; height: 14px; padding: 0 16px 8px; }
   .player-vis-bar { width: 2px; background: rgba(255,255,255,0.25); border-radius: 1px; transform-origin: bottom; }
   .player.playing .player-vis-bar { animation: visAnim 0.8s ease-in-out infinite alternate; }
   .player-vis-bar:nth-child(1){height:4px;animation-delay:0s} .player-vis-bar:nth-child(2){height:8px;animation-delay:.05s} .player-vis-bar:nth-child(3){height:12px;animation-delay:.1s} .player-vis-bar:nth-child(4){height:6px;animation-delay:.15s} .player-vis-bar:nth-child(5){height:14px;animation-delay:.2s} .player-vis-bar:nth-child(6){height:10px;animation-delay:.25s} .player-vis-bar:nth-child(7){height:16px;animation-delay:.3s} .player-vis-bar:nth-child(8){height:8px;animation-delay:.35s} .player-vis-bar:nth-child(9){height:12px;animation-delay:.4s} .player-vis-bar:nth-child(10){height:5px;animation-delay:.45s} .player-vis-bar:nth-child(11){height:9px;animation-delay:.5s} .player-vis-bar:nth-child(12){height:13px;animation-delay:.55s} .player-vis-bar:nth-child(13){height:7px;animation-delay:.6s} .player-vis-bar:nth-child(14){height:11px;animation-delay:.65s} .player-vis-bar:nth-child(15){height:4px;animation-delay:.7s}
   @keyframes visAnim { 0%{transform:scaleY(0.25);opacity:.35} 100%{transform:scaleY(1);opacity:1} }
-  .player-hint { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); text-align: center; padding: 0 16px 10px; letter-spacing: 0.05em; }
 
-  /* ===== TG FLOAT — iOS 26 Glass ===== */
   .tg-float { position: fixed; bottom: calc(2rem + var(--safe-bottom)); right: 2rem; z-index: 100; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
   @media (max-width: 600px) { .tg-float { bottom: calc(70px + var(--safe-bottom)); right: 1rem; } }
   .tg-btn {
@@ -635,7 +571,6 @@
   @media (max-width: 600px) { .tg-label { display: none; } }
   @keyframes floatAnim { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
 
-  /* ===== MODAL — iOS 26 Glass ===== */
   .modal-overlay {
     position: fixed; inset: 0;
     background: var(--modal-bg);
@@ -680,7 +615,6 @@
   .modal-contact:hover .modal-contact-arrow { transform: translateX(4px); }
   .modal-note { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 1.25rem; line-height: 1.7; }
 
-  /* ===== FOOTER ===== */
   .site-footer { border-top: 1px solid var(--footer-border); padding: 2rem 2rem calc(2rem + var(--safe-bottom)); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
   @media (max-width: 600px) { .site-footer { padding-bottom: calc(80px + var(--safe-bottom)); } }
   .footer-logo { font-family: var(--font-display); font-size: 22px; letter-spacing: 0.05em; color: var(--text); }
@@ -689,7 +623,6 @@
   .footer-link { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); text-decoration: none; letter-spacing: 0.08em; transition: color 0.2s ease; }
   .footer-link:hover { color: var(--text); }
 
-  /* ===== REVEAL ===== */
   .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
   .reveal.visible { opacity: 1; transform: translateY(0); }
   .reveal-delay-1 { transition-delay: 0.1s; }
@@ -828,13 +761,11 @@
   <div class="footer-copy">© 2024 ManewonBeats</div>
 </footer>
 
-<audio id="bgAudio" loop preload="auto">
-  <source src="music.mp3" type="audio/mpeg">
-</audio>
+<!-- Audio element (src managed by JS) -->
+<audio id="bgAudio" preload="auto"></audio>
 
 <!-- Music Player -->
 <div class="player" id="player">
-  <!-- Toggle button -->
   <button class="player-toggle" id="playerToggle" onclick="togglePlayerCollapse()">
     <span class="player-toggle-icon" id="toggleChevron">▾</span>
     <span id="toggleText">Свернуть</span>
@@ -850,7 +781,7 @@
         <div class="player-pill-bar"></div>
         <div class="player-pill-bar"></div>
       </div>
-      <div class="player-pill-track">manewon — beat</div>
+      <div class="player-pill-track" id="pillTrackName">manewon — beat 1</div>
       <button class="player-pill-btn" onclick="togglePlay()">
         <svg id="pillIconPlay" viewBox="0 0 24 24" fill="currentColor"><path class="icon-play" d="M8 5v14l11-7z"/></svg>
       </button>
@@ -866,7 +797,7 @@
           </div>
         </div>
         <div class="player-info">
-          <div class="player-track">manewon — beat</div>
+          <div class="player-track" id="trackName">manewon — beat 1</div>
           <div class="player-artist">@manewonbeats</div>
         </div>
         <button class="player-play" id="playBtn" onclick="togglePlay()">
@@ -875,6 +806,21 @@
           </svg>
         </button>
       </div>
+
+      <!-- Prev / Next -->
+      <div class="player-nav">
+        <button class="player-nav-btn" onclick="prevTrack()" title="Предыдущий">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        </button>
+        <span class="player-track-counter" id="trackCounter">1 / 5</span>
+        <button class="player-nav-btn" onclick="nextTrack()" title="Следующий">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2.5-6 5.5 3.9V8.1L8.5 12zM16 6h2v12h-2z"/></svg>
+        </button>
+      </div>
+
+      <!-- Track list -->
+      <div class="player-tracklist" id="trackList"></div>
+
       <div class="player-progress-wrap">
         <div class="player-timeline" id="timeline" onclick="seekAudio(event)">
           <div class="player-timeline-fill" id="timelineFill"></div>
@@ -897,7 +843,6 @@
         <div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div>
         <div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div>
       </div>
-      <div class="player-hint" id="playerHint">Нажмите ▶ чтобы включить</div>
     </div>
   </div>
 </div>
@@ -1039,7 +984,17 @@ function animateCounters() {
   });
 }
 
-// ===== PLAYER =====
+// ===== MULTI-TRACK PLAYER =====
+
+// Playlist — названия треков (можно поменять на свои)
+const TRACKS = [
+  { file: 'music.mp3',  name: 'Beat 01' },
+  { file: 'music2.mp3', name: 'Beat 02' },
+  { file: 'music3.mp3', name: 'Beat 03' },
+  { file: 'music4.mp3', name: 'Beat 04' },
+  { file: 'music5.mp3', name: 'Beat 05' },
+];
+
 const audio = document.getElementById('bgAudio');
 const iconPlay = document.getElementById('iconPlay');
 const pillIconPlay = document.getElementById('pillIconPlay');
@@ -1049,9 +1004,12 @@ const timeDuration = document.getElementById('timeDuration');
 const volSlider = document.getElementById('volSlider');
 const volIcon = document.getElementById('volIcon');
 const playerEl = document.getElementById('player');
-const playerHint = document.getElementById('playerHint');
+const trackNameEl = document.getElementById('trackName');
+const pillTrackName = document.getElementById('pillTrackName');
+const trackCounter = document.getElementById('trackCounter');
 
 let isPlaying = false, isMuted = false, isCollapsed = false;
+let currentTrack = 0;
 audio.volume = 0.6;
 
 const PLAY_SVG = '<path d="M8 5v14l11-7z"/>';
@@ -1061,21 +1019,90 @@ const VOL_OFF = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-
 
 function fmt(s) { if(!s||isNaN(s)) return '0:00'; return Math.floor(s/60)+':'+(Math.floor(s%60)<10?'0':'')+Math.floor(s%60); }
 
+// Build tracklist UI
+function buildTrackList() {
+  const list = document.getElementById('trackList');
+  list.innerHTML = '';
+  TRACKS.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'player-track-item' + (i===currentTrack ? ' active' : '');
+    row.dataset.index = i;
+    row.innerHTML = `
+      <div class="track-item-num">${i===currentTrack ? '' : (i+1)}</div>
+      <div class="track-item-playing" style="display:${i===currentTrack?'flex':'none'}">
+        <div class="track-item-bar"></div>
+        <div class="track-item-bar"></div>
+        <div class="track-item-bar"></div>
+      </div>
+      <div class="track-item-name">manewon — ${t.name}</div>
+      <div class="track-item-dur" id="dur-${i}">—:——</div>
+    `;
+    row.addEventListener('click', () => loadTrack(i, true));
+    list.appendChild(row);
+  });
+}
+
+function updateTrackUI() {
+  const name = 'manewon — ' + TRACKS[currentTrack].name;
+  trackNameEl.textContent = name;
+  pillTrackName.textContent = name;
+  trackCounter.textContent = (currentTrack+1) + ' / ' + TRACKS.length;
+  // Update tracklist active state
+  document.querySelectorAll('.player-track-item').forEach((row, i) => {
+    row.classList.toggle('active', i===currentTrack);
+    row.querySelector('.track-item-num').textContent = i===currentTrack ? '' : (i+1);
+    row.querySelector('.track-item-playing').style.display = i===currentTrack ? 'flex' : 'none';
+  });
+}
+
+function loadTrack(index, autoplay) {
+  currentTrack = index;
+  audio.src = TRACKS[index].file;
+  audio.load();
+  updateTrackUI();
+  timelineFill.style.width = '0%';
+  timeCurrent.textContent = '0:00';
+  timeDuration.textContent = '—:——';
+  if (autoplay) {
+    audio.play().then(() => {
+      isPlaying = true;
+      playerEl.classList.add('playing');
+      iconPlay.innerHTML = PAUSE_SVG;
+      pillIconPlay.innerHTML = PAUSE_SVG;
+    }).catch(() => {});
+  }
+}
+
+function nextTrack() {
+  loadTrack((currentTrack + 1) % TRACKS.length, isPlaying);
+}
+
+function prevTrack() {
+  if (audio.currentTime > 3) {
+    audio.currentTime = 0;
+    return;
+  }
+  loadTrack((currentTrack - 1 + TRACKS.length) % TRACKS.length, isPlaying);
+}
+
+// Auto-advance to next track when current ends
+audio.addEventListener('ended', () => {
+  nextTrack();
+});
+
 function togglePlay() {
   if (isPlaying) {
     audio.pause(); isPlaying = false;
     playerEl.classList.remove('playing');
     iconPlay.innerHTML = PLAY_SVG;
     pillIconPlay.innerHTML = PLAY_SVG;
-    if (playerHint) playerHint.textContent = 'Нажмите ▶ чтобы включить';
   } else {
     audio.play().then(() => {
       isPlaying = true;
       playerEl.classList.add('playing');
       iconPlay.innerHTML = PAUSE_SVG;
       pillIconPlay.innerHTML = PAUSE_SVG;
-      if (playerHint) playerHint.textContent = 'Играет в фоне';
-    }).catch(() => { if(playerHint) playerHint.textContent = 'Файл не найден'; });
+    }).catch(() => {});
   }
 }
 
@@ -1094,29 +1121,38 @@ function seekAudio(e) {
   const rect = e.currentTarget.getBoundingClientRect();
   audio.currentTime = ((e.clientX-rect.left)/rect.width)*audio.duration;
 }
+
 audio.addEventListener('timeupdate', () => {
   if (!audio.duration) return;
   timelineFill.style.width = (audio.currentTime/audio.duration*100)+'%';
   timeCurrent.textContent = fmt(audio.currentTime);
 });
-audio.addEventListener('loadedmetadata', () => { timeDuration.textContent = fmt(audio.duration); });
 
-// ===== PLAYER COLLAPSE =====
+audio.addEventListener('loadedmetadata', () => {
+  timeDuration.textContent = fmt(audio.duration);
+  // Update duration in tracklist
+  const durEl = document.getElementById('dur-' + currentTrack);
+  if (durEl) durEl.textContent = fmt(audio.duration);
+});
+
+// PLAYER COLLAPSE
 function togglePlayerCollapse() {
   isCollapsed = !isCollapsed;
   playerEl.classList.toggle('collapsed', isCollapsed);
   document.getElementById('toggleText').textContent = isCollapsed ? 'Развернуть' : 'Свернуть';
   localStorage.setItem('playerCollapsed', isCollapsed ? '1' : '0');
 }
-
-// Restore collapse state
 if (localStorage.getItem('playerCollapsed') === '1') {
   isCollapsed = true;
   playerEl.classList.add('collapsed');
   document.getElementById('toggleText').textContent = 'Развернуть';
 }
 
-// Duplicate marquee
+// Init player
+buildTrackList();
+loadTrack(0, false);
+
+// Marquee duplicate
 const track = document.getElementById('marquee');
 track.innerHTML += track.innerHTML;
 
@@ -1124,7 +1160,7 @@ track.innerHTML += track.innerHTML;
 let autoTried = false;
 function tryAutoPlay() {
   if (autoTried||isPlaying) return; autoTried=true;
-  audio.play().then(()=>{ isPlaying=true; playerEl.classList.add('playing'); iconPlay.innerHTML=PAUSE_SVG; pillIconPlay.innerHTML=PAUSE_SVG; if(playerHint) playerHint.textContent='Играет в фоне'; }).catch(()=>{});
+  audio.play().then(()=>{ isPlaying=true; playerEl.classList.add('playing'); iconPlay.innerHTML=PAUSE_SVG; pillIconPlay.innerHTML=PAUSE_SVG; }).catch(()=>{});
 }
 document.addEventListener('click', tryAutoPlay, { once:true });
 document.addEventListener('touchstart', tryAutoPlay, { once:true, passive:true });
