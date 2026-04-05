@@ -504,6 +504,96 @@ body::before { content:''; position:fixed; inset:0; background-image:url("data:i
   .player-card:hover { box-shadow: var(--glass-shadow), 0 0 0 1px var(--glass-border-strong); }
 }
 
+
+/* NEW badge на карточке стиля */
+.style-new-badge {
+  position: absolute;
+  top: 14px; right: 14px;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px;
+  background: var(--free-accent);
+  color: #000;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  border-radius: 100px;
+  z-index: 2;
+  animation: newPulse 2.5s ease-in-out infinite;
+}
+.style-new-badge::before {
+  content: '';
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: #000;
+  opacity: .5;
+}
+@keyframes newPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(48,209,88,.35); }
+  50% { box-shadow: 0 0 0 5px rgba(48,209,88,0); }
+}
+
+/* Мини-плеер внутри карточки стиля */
+.style-mini-player {
+  position: relative; z-index: 2;
+  margin-top: 1rem;
+  background: rgba(0,0,0,.2);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: background .2s;
+}
+[data-theme="light"] .style-mini-player {
+  background: rgba(0,0,0,.06);
+  border-color: rgba(0,0,0,.1);
+}
+.style-card:hover .style-mini-player,
+.style-card.touch-active .style-mini-player {
+  background: rgba(0,0,0,.18);
+  border-color: rgba(255,255,255,.18);
+}
+.smp-progress { height: 2px; background: rgba(255,255,255,.12); }
+.smp-fill { height: 100%; background: var(--free-accent); width: 0%; transition: width .3s linear; }
+.smp-body { display: flex; align-items: center; gap: 8px; padding: 8px 10px; }
+.smp-art {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: linear-gradient(135deg,#222,#0a0a0a);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+}
+[data-theme="light"] .smp-art { background: linear-gradient(135deg,#d0d0d5,#b8b8be); }
+.smp-vinyl {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1.5px solid rgba(245,245,240,.15);
+  position: relative;
+}
+.smp-vinyl::after {
+  content: ''; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 4px; height: 4px; border-radius: 50%;
+  background: #111;
+}
+.smp-playing .smp-vinyl { animation: spin 3s linear infinite; }
+.smp-info { flex: 1; min-width: 0; }
+.smp-title { font-size: 10px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
+.smp-sub { font-family: var(--font-mono); font-size: 8px; color: var(--text-dim); margin-top: 1px; }
+.smp-btn {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--free-accent);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #000; flex-shrink: 0;
+  transition: transform .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.smp-btn:active { transform: scale(.88); }
+.smp-btn svg { width: 11px; height: 11px; }
+.smp-times { display: flex; justify-content: space-between; padding: 0 10px 5px; font-family: var(--font-mono); font-size: 7px; color: var(--text-dim); }
+/* На светлой теме корректируем текст в плеере при ховере карточки */
+.style-card:hover .smp-title, .style-card.touch-active .smp-title { color: var(--card-hover-text); }
+.style-card:hover .smp-sub, .style-card.touch-active .smp-sub { color: rgba(0,0,0,.5); }
+.style-card:hover .smp-times, .style-card.touch-active .smp-times { color: rgba(0,0,0,.4); }
+
 audio { display:none; }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
 </style>
@@ -575,7 +665,29 @@ audio { display:none; }
     <div class="style-card"><div class="style-num">03</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">PLUGG</div><div class="style-desc">Атмосферные, dreamy биты. Melodic 808s, лёгкие перкуссии, трип-хоп атмосфера.</div><div class="style-tag">ATL · Dreamy</div></div>
     <div class="style-card"><div class="style-num">04</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">JERK</div><div class="style-desc">Энергичный LA стиль. Bouncy drums, fast BPM, электронные элементы и свэг.</div><div class="style-tag">LA · Club</div></div>
     <div class="style-card"><div class="style-num">05</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">DABBACKWOOD</div><div class="style-desc">Type beat в стиле Dab. Тяжёлые 808s, тёмные мелодии, trap элементы.</div><div class="style-tag">Trap · Dark</div></div>
-    <div class="style-card"><div class="style-num">06</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">FLINT</div><div class="style-desc">Жёсткий уличный звук из Мичигана. Gritty 808s, мрачные сэмплы, raw атмосфера.</div><div class="style-tag">Michigan · Raw</div></div>
+    <div class="style-card" id="flintCard">
+      <div class="style-new-badge">✦ New</div>
+      <div class="style-num">06</div>
+      <div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+      <div class="style-name">FLINT</div>
+      <div class="style-desc">Жёсткий уличный звук из Мичигана. Gritty 808s, мрачные сэмплы, raw атмосфера.</div>
+      <div class="style-tag">Michigan · Raw</div>
+      <!-- Мини-плеер стиля FLINT -->
+      <div class="style-mini-player" id="smpWrap">
+        <div class="smp-progress"><div class="smp-fill" id="smpFill"></div></div>
+        <div class="smp-body">
+          <div class="smp-art"><div class="smp-vinyl" id="smpVinyl"></div></div>
+          <div class="smp-info">
+            <div class="smp-title">manewon — Flint Style</div>
+            <div class="smp-sub">flintstyle.mp3</div>
+          </div>
+          <button class="smp-btn" id="smpBtn" onclick="smpToggle(event)">
+            <svg id="smpIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" style="transform-origin:center;transform:translateX(1px)"/></svg>
+          </button>
+        </div>
+        <div class="smp-times"><span id="smpCur">0:00</span><span id="smpDur">—:——</span></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -589,7 +701,7 @@ audio { display:none; }
       </div>
       <div class="free-top-badge reveal"><span class="free-badge-dot"></span>5 треков · free</div>
     </div>
-    <p class="free-desc reveal">Полный бит без эффекта можно найти в телеграм канале, при бесплатном использовании в описании просто впиши <strong style="color:var(--text)">@manewon888</strong> в посте или сторис. Единственное условие 🤝</p>
+    <p class="free-desc reveal">Бери любой бит бесплатно — просто отметь <strong style="color:var(--text)">@manewon888</strong> в посте или сторис. Единственное условие 🤝</p>
     <div class="free-list reveal" id="freeList"></div>
     <div class="free-cta-block reveal">
       <div>
@@ -986,7 +1098,7 @@ function togglePlay() {
     audio.pause(); isPlaying=false; playerEl.classList.remove('playing');
     iconPlay.innerHTML=PLAY; pillIconPlay.innerHTML=PLAY;
   } else {
-    audio.play().then(()=>{ isPlaying=true; playerEl.classList.add('playing'); iconPlay.innerHTML=PAUSE; pillIconPlay.innerHTML=PAUSE; }).catch(()=>{});
+    audio.play().then(()=>{ isPlaying=true; playerEl.classList.add('playing'); iconPlay.innerHTML=PAUSE; pillIconPlay.innerHTML=PAUSE; document.dispatchEvent(new Event('mainPlayerPlay')); }).catch(()=>{});
   }
   updateFreeList();
   updateMobMp();
@@ -1169,6 +1281,61 @@ function updateHeroEq() {
 const _tp = togglePlay;
 // Already defined above, just patch updateMobMp to include heroEq
 const _origUpdateMobMp = updateMobMp;
+
+
+// ── FLINT STYLE MINI PLAYER ──
+const smpAudio = new Audio('flintstyle.mp3');
+smpAudio.preload = 'metadata';
+let smpPlaying = false;
+
+function smpFmt(s) { if(!s||isNaN(s)) return '0:00'; return Math.floor(s/60)+':'+(Math.floor(s%60)<10?'0':'')+Math.floor(s%60); }
+
+smpAudio.addEventListener('loadedmetadata', () => {
+  const d = document.getElementById('smpDur');
+  if(d) d.textContent = smpFmt(smpAudio.duration);
+});
+smpAudio.addEventListener('timeupdate', () => {
+  const fill = document.getElementById('smpFill');
+  const cur = document.getElementById('smpCur');
+  if(fill && smpAudio.duration) fill.style.width = (smpAudio.currentTime / smpAudio.duration * 100) + '%';
+  if(cur) cur.textContent = smpFmt(smpAudio.currentTime);
+});
+smpAudio.addEventListener('ended', () => {
+  smpPlaying = false;
+  smpUpdateUI();
+  smpAudio.currentTime = 0;
+});
+
+function smpUpdateUI() {
+  const btn = document.getElementById('smpIcon');
+  const wrap = document.getElementById('smpWrap');
+  const vinyl = document.getElementById('smpVinyl');
+  if(btn) btn.innerHTML = smpPlaying
+    ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'
+    : '<path d="M8 5v14l11-7z" style="transform-origin:center;transform:translateX(1px)"/>';
+  if(wrap) wrap.classList.toggle('smp-playing', smpPlaying);
+  if(vinyl) vinyl.style.animation = smpPlaying ? 'spin 3s linear infinite' : 'none';
+}
+
+function smpToggle(e) {
+  e.stopPropagation(); // не триггерить touch-active на карточке
+  if(smpPlaying) {
+    smpAudio.pause();
+    smpPlaying = false;
+  } else {
+    // Пауза основного плеера если играет
+    if(isPlaying) { audio.pause(); isPlaying=false; playerEl.classList.remove('playing'); iconPlay.innerHTML=PLAY; pillIconPlay.innerHTML=PLAY; updateFreeList(); updateMobMp(); }
+    smpAudio.play().then(() => { smpPlaying = true; smpUpdateUI(); }).catch(()=>{});
+    return;
+  }
+  smpUpdateUI();
+}
+
+// Если основной плеер запускается — пауза флинт плеера
+const _origTogglePlay = togglePlay;
+document.addEventListener('mainPlayerPlay', () => {
+  if(smpPlaying) { smpAudio.pause(); smpPlaying=false; smpUpdateUI(); }
+});
 
 // MARQUEE dup
 const mq=document.getElementById('marquee'); mq.innerHTML+=mq.innerHTML;
