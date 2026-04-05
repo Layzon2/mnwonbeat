@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="description" content="ManewonBeats — профессиональные биты: West Coast, Digicore, Plugg, Jerk, Dabbackwood">
+<meta name="description" content="ManewonBeats — профессиональные биты: West Coast, Digicore, Plugg, Jerk, Dabbackwood, Flint">
 <meta name="theme-color" content="#0a0a0a" id="metaTheme">
 <title>ManewonBeats</title>
 <link rel="icon" type="image/png" href="logo.png">
@@ -387,7 +387,7 @@ body::before { content:''; position:fixed; inset:0; background-image:url("data:i
 .mob-miniplayer {
   display:none;
   position:fixed;
-  bottom:calc(56px + var(--safe-bottom));
+  bottom:calc(76px + var(--safe-bottom));
   left:12px; right:12px;
   z-index:299;
   background:var(--glass-bg);
@@ -457,6 +457,53 @@ body::before { content:''; position:fixed; inset:0; background-image:url("data:i
 .reveal-delay-2 { transition-delay:.2s; }
 .reveal-delay-3 { transition-delay:.3s; }
 
+
+/* ── НОВЫЕ ФИЧИ ── */
+
+/* Шаффл / Повтор кнопки в плеере */
+.player-extra-btns { display:flex; align-items:center; justify-content:space-between; padding:0 14px 6px; }
+.player-extra-btn { width:22px; height:22px; background:none; border:none; cursor:pointer; color:var(--text-dim); display:flex; align-items:center; justify-content:center; border-radius:6px; transition:color .2s; -webkit-tap-highlight-color:transparent; padding:0; }
+.player-extra-btn.active { color:var(--accent-2); }
+.player-extra-btn:active { transform:scale(.85); }
+.player-extra-btn svg { width:13px; height:13px; }
+
+/* Mob extra btns */
+.mob-mp-extra { display:flex; align-items:center; gap:4px; }
+.mob-mp-extra-btn { width:26px; height:26px; background:none; border:none; cursor:pointer; color:var(--text-dim); display:flex; align-items:center; justify-content:center; border-radius:6px; -webkit-tap-highlight-color:transparent; }
+.mob-mp-extra-btn.active { color:var(--accent-2); }
+.mob-mp-extra-btn svg { width:12px; height:12px; }
+
+/* Кнопка Share в hero */
+.share-toast { position:fixed; top:calc(80px + var(--safe-top)); left:50%; transform:translateX(-50%) translateY(-10px); background:var(--toast-bg); color:var(--text); border:1px solid var(--glass-border); border-radius:100px; padding:9px 18px; font-family:var(--font-mono); font-size:11px; box-shadow:var(--glass-shadow); z-index:9001; opacity:0; pointer-events:none; transition:all .35s cubic-bezier(.34,1.56,.64,1); white-space:nowrap; backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur); }
+.share-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* Индикатор клавиш (desktop подсказка) */
+.keys-hint { display:none; position:fixed; bottom:calc(1.5rem + var(--safe-bottom)); left:50%; transform:translateX(-50%); background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:100px; padding:5px 14px; font-family:var(--font-mono); font-size:9px; color:var(--text-dim); letter-spacing:.08em; backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur); z-index:50; white-space:nowrap; }
+@media (pointer:fine) { .keys-hint { display:flex; gap:10px; align-items:center; } }
+.key-badge { background:var(--surface3); border:1px solid var(--border); border-radius:4px; padding:1px 5px; font-size:9px; }
+
+/* Спящий режим — затемнение экрана при неактивности */
+#sleep-overlay { position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; z-index:8000; transition:opacity 2s ease; }
+#sleep-overlay.sleeping { opacity:.85; pointer-events:all; cursor:pointer; }
+
+/* Equalizer visual в hero badge когда играет */
+.hero-eq { display:none; align-items:flex-end; gap:1.5px; height:10px; margin-left:4px; }
+.hero-eq.active { display:flex; }
+.hero-eq-bar { width:2px; background:var(--accent-2); border-radius:1px; transform-origin:bottom; }
+.hero-eq-bar:nth-child(1){height:4px;animation:visAnim .6s ease-in-out infinite alternate;animation-delay:0s}
+.hero-eq-bar:nth-child(2){height:8px;animation:visAnim .6s ease-in-out infinite alternate;animation-delay:.1s}
+.hero-eq-bar:nth-child(3){height:10px;animation:visAnim .6s ease-in-out infinite alternate;animation-delay:.2s}
+
+/* Improved mobile: content padding-bottom for mini player */
+@media (max-width:900px) {
+  .hero { padding-bottom: calc(160px + var(--safe-bottom)); }
+}
+
+/* PC: better player shadow on hover */
+@media (min-width:901px) {
+  .player-card:hover { box-shadow: var(--glass-shadow), 0 0 0 1px var(--glass-border-strong); }
+}
+
 audio { display:none; }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
 </style>
@@ -485,12 +532,13 @@ audio { display:none; }
   <div class="hero-bg-grid"></div>
   <div class="hero-orb"></div>
   <div class="hero-content">
-    <div class="hero-badge"><span class="dot"></span>Beat Store — Online</div>
+    <div class="hero-badge"><span class="dot"></span>Beat Store — Online<div class="hero-eq" id="heroEq"><div class="hero-eq-bar"></div><div class="hero-eq-bar"></div><div class="hero-eq-bar"></div></div></div>
     <h1 class="hero-title">MANEWON<span>BEATS</span></h1>
     <p class="hero-sub">West Coast · Digicore · Plugg · Jerk · Dabbackwood</p>
     <div class="hero-cta">
       <button class="btn btn-primary" onclick="openModal()">🎵 Заказать бит</button>
       <a href="#free" class="btn btn-outline"><span>🎁 Фри биты</span></a>
+      <button class="btn btn-outline" onclick="sharesite()" style="padding:12px 16px"><span>🔗</span></button>
     </div>
     <div class="hero-stats">
       <div class="hero-stat"><div class="hero-stat-num" data-count="50">0</div><div class="hero-stat-label">Битов продано</div></div>
@@ -527,6 +575,7 @@ audio { display:none; }
     <div class="style-card"><div class="style-num">03</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">PLUGG</div><div class="style-desc">Атмосферные, dreamy биты. Melodic 808s, лёгкие перкуссии, трип-хоп атмосфера.</div><div class="style-tag">ATL · Dreamy</div></div>
     <div class="style-card"><div class="style-num">04</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">JERK</div><div class="style-desc">Энергичный LA стиль. Bouncy drums, fast BPM, электронные элементы и свэг.</div><div class="style-tag">LA · Club</div></div>
     <div class="style-card"><div class="style-num">05</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">DABBACKWOOD</div><div class="style-desc">Type beat в стиле Dab. Тяжёлые 808s, тёмные мелодии, trap элементы.</div><div class="style-tag">Trap · Dark</div></div>
+    <div class="style-card"><div class="style-num">06</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">FLINT</div><div class="style-desc">Жёсткий уличный звук из Мичигана. Gritty 808s, мрачные сэмплы, raw атмосфера.</div><div class="style-tag">Michigan · Raw</div></div>
   </div>
 </section>
 
@@ -540,7 +589,7 @@ audio { display:none; }
       </div>
       <div class="free-top-badge reveal"><span class="free-badge-dot"></span>5 треков · free</div>
     </div>
-    <p class="free-desc reveal">Биты без эффекта можно найти в телеграм канале, чтобы использовать бесплатно просто напиши в описании <strong style="color:var(--text)">@manewon888</strong> в посте или сторис. Единственное условие 🤝</p>
+    <p class="free-desc reveal">Бери любой бит бесплатно — просто отметь <strong style="color:var(--text)">@manewon888</strong> в посте или сторис. Единственное условие 🤝</p>
     <div class="free-list reveal" id="freeList"></div>
     <div class="free-cta-block reveal">
       <div>
@@ -655,6 +704,15 @@ audio { display:none; }
       <div class="player-controls">
         <button class="player-mute" onclick="toggleMute()"><svg id="volIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg></button>
         <input type="range" class="player-volume" id="volSlider" min="0" max="1" step="0.01" value="0.6" oninput="setVolume(this.value)">
+      </div>
+      <div class="player-extra-btns">
+        <button class="player-extra-btn" id="shuffleBtn" onclick="toggleShuffle()" title="Шаффл">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+        </button>
+        <span style="font-family:var(--font-mono);font-size:8px;color:var(--text-dim)" id="modeLabel">По порядку</span>
+        <button class="player-extra-btn" id="repeatBtn" onclick="toggleRepeat()" title="Повтор">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+        </button>
       </div>
       <div class="player-vis">
         <div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div><div class="player-vis-bar"></div>
@@ -893,6 +951,7 @@ function updateMobMp() {
   // vinyl spin
   const vinyl=document.getElementById('mobMpVinyl');
   if(vinyl) { vinyl.style.animation=isPlaying?'spin 3s linear infinite':'none'; }
+  const eq=document.getElementById('heroEq'); if(eq) eq.classList.toggle('active',isPlaying);
 }
 
 function updateTrackUI() {
@@ -920,7 +979,7 @@ function prevTrack() {
   if(audio.currentTime>3){audio.currentTime=0;return;}
   loadTrack((currentTrack-1+TRACKS.length)%TRACKS.length, isPlaying);
 }
-audio.addEventListener('ended', nextTrack);
+// ended handled by shuffle/repeat logic below
 
 function togglePlay() {
   if(isPlaying){
@@ -1016,6 +1075,101 @@ buildTrackList();
 buildFreeList();
 loadTrack(0,false);
 
+
+// ── НОВЫЕ ФИЧИ ──
+
+// 1. ШАФФЛ + ПОВТОР
+let shuffleMode = false, repeatMode = false;
+function toggleShuffle() {
+  shuffleMode = !shuffleMode;
+  if(shuffleMode) repeatMode = false;
+  updateModeUI();
+}
+function toggleRepeat() {
+  repeatMode = !repeatMode;
+  if(repeatMode) shuffleMode = false;
+  updateModeUI();
+}
+function updateModeUI() {
+  const sb = document.getElementById('shuffleBtn');
+  const rb = document.getElementById('repeatBtn');
+  const ml = document.getElementById('modeLabel');
+  const msb = document.getElementById('mobShuffleBtn');
+  const mrb = document.getElementById('mobRepeatBtn');
+  if(sb) sb.classList.toggle('active', shuffleMode);
+  if(rb) rb.classList.toggle('active', repeatMode);
+  if(msb) msb.classList.toggle('active', shuffleMode);
+  if(mrb) mrb.classList.toggle('active', repeatMode);
+  if(ml) ml.textContent = shuffleMode ? 'Шаффл' : repeatMode ? 'Повтор' : 'По порядку';
+}
+// Override nextTrack for shuffle/repeat
+const _origNextTrack = nextTrack;
+// Override ended handler
+audio.removeEventListener('ended', nextTrack);
+audio.addEventListener('ended', () => {
+  if(repeatMode) { audio.currentTime=0; audio.play().catch(()=>{}); return; }
+  if(shuffleMode) {
+    let next; do { next = Math.floor(Math.random()*TRACKS.length); } while(next===currentTrack && TRACKS.length>1);
+    loadTrack(next, true); return;
+  }
+  loadTrack((currentTrack+1)%TRACKS.length, true);
+});
+
+// 2. KEYBOARD SHORTCUTS
+document.addEventListener('keydown', e => {
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  if(e.code==='Space') { e.preventDefault(); togglePlay(); }
+  if(e.code==='ArrowRight') nextTrack();
+  if(e.code==='ArrowLeft') prevTrack();
+  if(e.key.toLowerCase()==='m') toggleMute();
+  if(e.key.toLowerCase()==='s') toggleShuffle();
+  resetSleep();
+});
+
+// 3. SHARE САЙТА
+function sharesite() {
+  const url = window.location.href;
+  if(navigator.share) {
+    navigator.share({ title:'ManewonBeats', url }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(url).then(()=>{
+      const t = document.getElementById('shareToast');
+      t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2200);
+    });
+  }
+}
+
+// 4. SLEEP / SCREEN DIM (5 мин неактивности на мобиле)
+let sleepTimer;
+function resetSleep() {
+  clearTimeout(sleepTimer);
+  const ov = document.getElementById('sleep-overlay');
+  if(ov) ov.classList.remove('sleeping');
+  sleepTimer = setTimeout(() => {
+    if(window.innerWidth<=900 && isPlaying) {
+      const ov = document.getElementById('sleep-overlay');
+      if(ov) ov.classList.add('sleeping');
+    }
+  }, 5 * 60 * 1000);
+}
+function wakeUp() {
+  const ov = document.getElementById('sleep-overlay');
+  if(ov) ov.classList.remove('sleeping');
+  resetSleep();
+}
+['touchstart','mousemove','click'].forEach(ev => document.addEventListener(ev, resetSleep, { passive:true }));
+resetSleep();
+
+// 5. HERO EQ — показывать анимацию в badge когда играет
+function updateHeroEq() {
+  const eq = document.getElementById('heroEq');
+  if(eq) eq.classList.toggle('active', isPlaying);
+}
+// Patch togglePlay to update hero eq
+const _tp = togglePlay;
+// Already defined above, just patch updateMobMp to include heroEq
+const _origUpdateMobMp = updateMobMp;
+
 // MARQUEE dup
 const mq=document.getElementById('marquee'); mq.innerHTML+=mq.innerHTML;
 
@@ -1028,5 +1182,8 @@ function tryAutoPlay(){
 document.addEventListener('click',tryAutoPlay,{once:true});
 document.addEventListener('touchstart',tryAutoPlay,{once:true,passive:true});
 </script>
+<div class="share-toast" id="shareToast">🔗 Ссылка скопирована!</div>
+<div class="keys-hint"><span class="key-badge">Space</span>Play/Pause <span class="key-badge">←</span><span class="key-badge">→</span>Треки <span class="key-badge">M</span>Mute <span class="key-badge">S</span>Шаффл</div>
+<div id="sleep-overlay" onclick="wakeUp()"></div>
 </body>
 </html>
