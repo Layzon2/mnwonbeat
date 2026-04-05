@@ -925,7 +925,7 @@ audio { display:none; }
     <a href="#pricing" class="mob-nav-item" data-section="pricing">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       <div class="mob-nav-dot"></div><span class="i18n" data-ru="Цены" data-en="Prices" data-uk="Ціни">Цены</span>
-    </button>
+    </a>
     <a href="#faq" class="mob-nav-item" data-section="faq">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       <div class="mob-nav-dot"></div>FAQ
@@ -1376,7 +1376,6 @@ function smpToggle(e) {
 }
 
 // Если основной плеер запускается — пауза флинт плеера
-const _origTogglePlay = togglePlay;
 document.addEventListener('mainPlayerPlay', () => {
   if(smpPlaying) { smpAudio.pause(); smpPlaying=false; smpUpdateUI(); }
 });
@@ -1412,9 +1411,9 @@ function setLang(lang) {
       'Фри биты доступны бесплатно при одном условии — отметь @manewon888 в посте или сторис где используешь бит. Коммерческое использование требует стандартной лицензии.'
     ],
     en: [
-      'The price of a custom beat is discussed individually and depends on complexity, style and deadline. Message me on Telegram — we'll work out the details and make you an offer.',
+      'The price of a custom beat is discussed individually and depends on complexity, style and deadline. Message me on Telegram — we\'ll work out the details and make you an offer.',
       'A custom beat is usually ready within 24–72 hours after receiving all the necessary info. Rush orders are discussed separately.',
-      'Yes! Standard and exclusive licenses include revisions. Tell me what you want changed — we'll make it work.',
+      'Yes! Standard and exclusive licenses include revisions. Tell me what you want changed — we\'ll make it work.',
       'Basic license — MP3 320kbps. Standard — WAV + MP3. Exclusive — WAV + MP3 + stems (separate tracks). All files are lossless.',
       'Yes, monetization is allowed with Standard and Exclusive licenses. Basic license — non-commercial use only.',
       'Free beats are available at no cost with one condition — tag @manewon888 in the post or story where you use the beat. Commercial use requires a Standard license.'
