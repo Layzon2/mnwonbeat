@@ -66,6 +66,10 @@
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body { background: var(--bg); color: var(--text); font-family: var(--font-body); overflow-x: hidden; transition: background var(--transition), color var(--transition); -webkit-font-smoothing: antialiased; }
 
+/* ── PERFORMANCE: will-change hints ── */
+.player-card, .mob-miniplayer, .modal { will-change: transform; }
+.hero-bg-grid { will-change: transform; }
+
 @media (pointer: fine) { body { cursor: none; } }
 @media (pointer: coarse) { .cursor, .cursor-ring { display: none !important; } }
 .cursor { position: fixed; width: 10px; height: 10px; background: var(--text); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: difference; transition: width .2s, height .2s; }
@@ -75,6 +79,11 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 
 body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"); pointer-events:none; z-index:9000; opacity:.2; }
 [data-theme="light"] body::before { opacity:.08; }
+
+/* ── RIPPLE ── */
+.ripple-container { position:relative; overflow:hidden; }
+.ripple { position:absolute; border-radius:50%; background:rgba(255,255,255,0.25); transform:scale(0); animation:rippleAnim .5s ease-out forwards; pointer-events:none; }
+@keyframes rippleAnim { to { transform:scale(4); opacity:0; } }
 
 /* PRELOADER */
 #preloader { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:99999; transition:opacity .6s,transform .6s; }
@@ -128,6 +137,27 @@ body::before { content:''; position:fixed; inset:0; background-image:url("data:i
 
 @keyframes fadeInDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
 @keyframes fadeInUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── НОВАЯ АНИМАЦИЯ: glitch для заголовка ── */
+.hero-title { position:relative; }
+.hero-title::after {
+  content: attr(data-glitch);
+  position: absolute; left: 0; top: 0; width: 100%;
+  font-family: var(--font-display);
+  font-size: inherit; line-height: inherit;
+  color: var(--text);
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+  transform: translate(-3px, 0);
+  opacity: 0;
+  animation: glitchAnim 8s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes glitchAnim {
+  0%,90%,100% { opacity:0; transform:translate(0); }
+  91% { opacity:.7; transform:translate(-3px,0); clip-path:polygon(0 10%,100% 10%,100% 45%,0 45%); }
+  92% { opacity:.7; transform:translate(3px,0); clip-path:polygon(0 55%,100% 55%,100% 80%,0 80%); }
+  93% { opacity:0; }
+}
 
 .scroll-hint { position:absolute; bottom:1.5rem; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:6px; color:var(--text-dim); font-size:9px; font-family:var(--font-mono); letter-spacing:.1em; animation:fadeInUp 1s ease 1.2s both; z-index:10; }
 @media (max-width:600px) { .scroll-hint { display:none; } }
@@ -195,9 +225,9 @@ body::before { content:''; position:fixed; inset:0; background-image:url("data:i
 .free-desc { font-size:12px; color:var(--text-muted); margin-bottom:1.75rem; line-height:1.7; max-width:500px; }
 
 .free-list { display:flex; flex-direction:column; gap:2px; margin-bottom:1.5rem; }
-.free-item { display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--bg); border-radius:14px; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background .2s; }
+.free-item { display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--bg); border-radius:14px; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background .2s,transform .15s; }
 [data-theme="light"] .free-item { background:var(--surface2); }
-.free-item:active { background:var(--surface3); }
+.free-item:active { background:var(--surface3); transform:scale(.99); }
 @media (hover:hover) { .free-item:hover { background:var(--surface2); } }
 .free-item-num { font-family:var(--font-mono); font-size:10px; color:var(--text-dim); width:16px; text-align:center; flex-shrink:0; }
 .free-item-art { width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,#1e1e1e,#111); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
@@ -283,7 +313,7 @@ body::before { content:''; position:fixed; inset:0; background-image:url("data:i
 #toast { position:fixed; bottom:calc(1.5rem + var(--safe-bottom)); left:50%; transform:translateX(-50%) translateY(16px); background:var(--toast-bg); color:var(--text); border:1px solid var(--glass-border); border-radius:100px; padding:9px 18px; font-family:var(--font-mono); font-size:11px; box-shadow:var(--glass-shadow); z-index:9000; opacity:0; pointer-events:none; transition:all .35s cubic-bezier(.34,1.56,.64,1); white-space:nowrap; backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur); }
 #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-/* PLAYER */
+/* ── УЛУЧШЕННЫЙ ПЛЕЕР (DESKTOP) ── */
 .player { position:fixed; bottom:calc(1.5rem + var(--safe-bottom)); left:1.5rem; z-index:100; }
 @media (max-width:900px) { .player { display:none !important; } }
 
@@ -296,7 +326,6 @@ body::before { content:''; position:fixed; inset:0; background-image:url("data:i
 .player-card { background:var(--glass-bg); backdrop-filter:var(--glass-blur-heavy); -webkit-backdrop-filter:var(--glass-blur-heavy); border:1px solid var(--glass-border); border-radius:22px; box-shadow:var(--glass-shadow); overflow:hidden; width:268px; position:relative; transition:border-color .2s,width .4s cubic-bezier(.4,0,.2,1),border-radius .4s cubic-bezier(.4,0,.2,1); }
 .player-card::before { content:''; position:absolute; inset:0; background:var(--glass-specular); pointer-events:none; z-index:0; border-radius:inherit; }
 .player-card > * { position:relative; z-index:1; }
-@media (max-width:600px) { .player-card { width:100%; } }
 .player.collapsed .player-card { border-radius:100px; width:auto; }
 .player.collapsed .player-expanded { max-height:0; opacity:0; overflow:hidden; pointer-events:none; }
 .player.collapsed .player-pill { display:flex !important; }
@@ -362,7 +391,7 @@ body::before { content:''; position:fixed; inset:0; background-image:url("data:i
 .player.playing .player-vis-bar { animation:visAnim .8s ease-in-out infinite alternate; }
 .player-vis-bar:nth-child(1){height:3px;animation-delay:0s}.player-vis-bar:nth-child(2){height:7px;animation-delay:.05s}.player-vis-bar:nth-child(3){height:11px;animation-delay:.1s}.player-vis-bar:nth-child(4){height:5px;animation-delay:.15s}.player-vis-bar:nth-child(5){height:13px;animation-delay:.2s}.player-vis-bar:nth-child(6){height:9px;animation-delay:.25s}.player-vis-bar:nth-child(7){height:15px;animation-delay:.3s}.player-vis-bar:nth-child(8){height:7px;animation-delay:.35s}.player-vis-bar:nth-child(9){height:11px;animation-delay:.4s}.player-vis-bar:nth-child(10){height:4px;animation-delay:.45s}.player-vis-bar:nth-child(11){height:8px;animation-delay:.5s}.player-vis-bar:nth-child(12){height:12px;animation-delay:.55s}.player-vis-bar:nth-child(13){height:6px;animation-delay:.6s}.player-vis-bar:nth-child(14){height:10px;animation-delay:.65s}.player-vis-bar:nth-child(15){height:3px;animation-delay:.7s}
 
-/* TG FLOAT — скрыт на мобиле, там есть нав */
+/* TG FLOAT */
 .tg-float { position:fixed; bottom:calc(1.5rem + var(--safe-bottom)); right:1.5rem; z-index:100; display:flex; flex-direction:column; align-items:flex-end; gap:5px; }
 @media (max-width:900px) { .tg-float { display:none !important; } }
 .tg-btn { display:flex; align-items:center; gap:7px; padding:9px 16px; background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:100px; text-decoration:none; color:var(--text); font-size:12px; font-weight:500; backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur); animation:floatAnim 3s ease-in-out infinite; box-shadow:var(--glass-shadow); -webkit-tap-highlight-color:transparent; position:relative; overflow:hidden; }
@@ -374,7 +403,9 @@ body::before { content:''; position:fixed; inset:0; background-image:url("data:i
 .tg-label { font-family:var(--font-mono); font-size:8px; color:var(--text-dim); text-align:right; }
 @keyframes floatAnim { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
 
-/* MOB NAV */
+/* ══════════════════════════════════════════════
+   MOB MINIPLAYER — полностью переписан
+   ══════════════════════════════════════════════ */
 .mob-nav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:300; background:var(--mob-nav-bg); backdrop-filter:var(--glass-blur-heavy); -webkit-backdrop-filter:var(--glass-blur-heavy); border-top:1px solid var(--glass-border); padding:8px 0 calc(8px + var(--safe-bottom)); }
 .mob-nav-inner { display:flex; justify-content:space-around; align-items:center; max-width:480px; margin:0 auto; }
 .mob-nav-item { display:flex; flex-direction:column; align-items:center; gap:3px; padding:5px 12px; color:var(--text-dim); text-decoration:none; font-family:var(--font-mono); font-size:8px; letter-spacing:.07em; background:none; border:none; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:color .2s; }
@@ -383,44 +414,111 @@ body::before { content:''; position:fixed; inset:0; background-image:url("data:i
 .mob-nav-dot { width:3px; height:3px; border-radius:50%; background:var(--accent-2); opacity:0; transition:opacity .2s; }
 .mob-nav-item.active .mob-nav-dot { opacity:1; }
 
-/* iOS мини-плеер над nav */
+/* Мини-плеер над nav */
 .mob-miniplayer {
-  display:none;
-  position:fixed;
-  bottom:calc(76px + var(--safe-bottom));
-  left:12px; right:12px;
-  z-index:299;
-  background:var(--glass-bg);
-  backdrop-filter:var(--glass-blur-heavy);
-  -webkit-backdrop-filter:var(--glass-blur-heavy);
-  border:1px solid var(--glass-border);
-  border-radius:18px;
-  box-shadow:var(--glass-shadow);
-  overflow:hidden;
-  -webkit-tap-highlight-color:transparent;
+  display: none;
+  position: fixed;
+  bottom: calc(72px + var(--safe-bottom));
+  left: 10px; right: 10px;
+  z-index: 299;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur-heavy);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  /* Swipe-to-dismiss prep */
+  transform: translateY(0);
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
 }
-.mob-miniplayer::before { content:''; position:absolute; inset:0; background:var(--glass-specular); pointer-events:none; z-index:0; border-radius:inherit; }
-.mob-miniplayer > * { position:relative; z-index:1; }
+.mob-miniplayer::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: var(--glass-specular);
+  pointer-events: none; z-index: 0;
+  border-radius: inherit;
+}
+.mob-miniplayer > * { position: relative; z-index: 1; }
+/* Drag handle */
+.mob-mp-handle {
+  width: 36px; height: 4px;
+  background: var(--glass-border-strong);
+  border-radius: 2px;
+  margin: 6px auto 0;
+}
 
-.mob-mp-progress { height:2px; background:rgba(255,255,255,.1); border-radius:0; }
-.mob-mp-progress-fill { height:100%; background:var(--text); width:0%; transition:width .3s linear; border-radius:0; }
+.mob-mp-progress { height: 2px; background: rgba(255,255,255,.1); border-radius: 0; margin-top: 4px; }
+.mob-mp-progress-fill { height: 100%; background: var(--text); width: 0%; transition: width .3s linear; border-radius: 0; }
 
-.mob-mp-body { display:flex; align-items:center; gap:10px; padding:9px 14px; }
-.mob-mp-art { width:32px; height:32px; border-radius:8px; background:linear-gradient(135deg,#1e1e1e,#111); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
-[data-theme="light"] .mob-mp-art { background:linear-gradient(135deg,#d5d5d9,#c5c5cb); }
-.mob-mp-vinyl { width:14px; height:14px; border-radius:50%; border:1.5px solid rgba(245,245,240,.12); position:relative; }
-[data-theme="light"] .mob-mp-vinyl { border-color:rgba(28,28,30,.12); }
-.mob-mp-vinyl::after { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:4px; height:4px; border-radius:50%; background:var(--surface2); }
-.player.playing ~ .mob-miniplayer .mob-mp-vinyl { animation:spin 3s linear infinite; }
-.mob-mp-info { flex:1; min-width:0; }
-.mob-mp-track { font-size:12px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.3; }
-.mob-mp-artist { font-family:var(--font-mono); font-size:9px; color:var(--text-dim); }
-.mob-mp-btns { display:flex; align-items:center; gap:6px; flex-shrink:0; }
-.mob-mp-btn { width:30px; height:30px; border-radius:50%; background:none; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text-muted); -webkit-tap-highlight-color:transparent; }
-.mob-mp-btn svg { width:14px; height:14px; }
-.mob-mp-play { width:34px; height:34px; border-radius:50%; background:var(--text); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--bg); -webkit-tap-highlight-color:transparent; transition:transform .15s; }
-.mob-mp-play:active { transform:scale(.88); }
-.mob-mp-play svg { width:14px; height:14px; }
+.mob-mp-body { display: flex; align-items: center; gap: 10px; padding: 9px 14px 10px; }
+.mob-mp-art {
+  width: 36px; height: 36px; border-radius: 9px;
+  background: linear-gradient(135deg,#1e1e1e,#111);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.4);
+}
+[data-theme="light"] .mob-mp-art { background: linear-gradient(135deg,#d5d5d9,#c5c5cb); }
+.mob-mp-vinyl {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 1.5px solid rgba(245,245,240,.15);
+  position: relative;
+  transition: animation .3s;
+}
+[data-theme="light"] .mob-mp-vinyl { border-color: rgba(28,28,30,.15); }
+.mob-mp-vinyl::after {
+  content: ''; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--surface2);
+}
+.mob-mp-vinyl.spinning { animation: spin 3s linear infinite; }
+
+.mob-mp-info { flex: 1; min-width: 0; }
+.mob-mp-track {
+  font-size: 13px; font-weight: 600;
+  color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  line-height: 1.3;
+}
+.mob-mp-artist { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); margin-top: 1px; }
+
+.mob-mp-btns { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.mob-mp-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); -webkit-tap-highlight-color: transparent;
+  transition: color .2s, transform .15s;
+  touch-action: manipulation;
+}
+.mob-mp-btn:active { transform: scale(.88); color: var(--text); }
+.mob-mp-btn svg { width: 16px; height: 16px; }
+
+.mob-mp-play {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--text); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--bg); -webkit-tap-highlight-color: transparent;
+  transition: transform .15s, background .2s;
+  touch-action: manipulation;
+  box-shadow: 0 2px 12px rgba(0,0,0,.3);
+}
+.mob-mp-play:active { transform: scale(.86); }
+.mob-mp-play svg { width: 16px; height: 16px; }
+
+/* EQ визуализатор в мини-плеере */
+.mob-mp-eq {
+  display: flex; align-items: flex-end; gap: 2px; height: 14px; flex-shrink: 0;
+  opacity: 0; transition: opacity .3s;
+}
+.mob-mp-eq.active { opacity: 1; }
+.mob-mp-eq-bar { width: 2.5px; background: var(--free-accent); border-radius: 1px; transform-origin: bottom; }
+.mob-mp-eq-bar:nth-child(1){height:5px;animation:visAnim .6s ease-in-out infinite alternate;animation-delay:0s}
+.mob-mp-eq-bar:nth-child(2){height:10px;animation:visAnim .6s ease-in-out infinite alternate;animation-delay:.1s}
+.mob-mp-eq-bar:nth-child(3){height:14px;animation:visAnim .6s ease-in-out infinite alternate;animation-delay:.2s}
+.mob-mp-eq-bar:nth-child(4){height:8px;animation:visAnim .6s ease-in-out infinite alternate;animation-delay:.3s}
 
 /* MODAL */
 .modal-overlay { position:fixed; inset:0; background:var(--modal-bg); backdrop-filter:blur(30px) saturate(180%); -webkit-backdrop-filter:blur(30px) saturate(180%); z-index:500; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .35s; padding:1.5rem; }
@@ -443,8 +541,7 @@ body::before { content:''; position:fixed; inset:0; background-image:url("data:i
 
 /* FOOTER */
 .site-footer { border-top:1px solid var(--footer-border); padding:1.75rem 20px calc(1.75rem + var(--safe-bottom)); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.75rem; }
-/* На мобиле учитываем высоту мини-плеера (~58px) + nav (~56px) */
-@media (max-width:900px) { .site-footer { padding-bottom:calc(130px + var(--safe-bottom)); } }
+@media (max-width:900px) { .site-footer { padding-bottom:calc(140px + var(--safe-bottom)); } }
 .footer-logo { font-family:var(--font-display); font-size:20px; letter-spacing:.05em; color:var(--text); }
 .footer-copy { font-family:var(--font-mono); font-size:9px; color:var(--text-dim); }
 .footer-links { display:flex; gap:.9rem; }
@@ -457,73 +554,101 @@ body::before { content:''; position:fixed; inset:0; background-image:url("data:i
 .reveal-delay-2 { transition-delay:.2s; }
 .reveal-delay-3 { transition-delay:.3s; }
 
-
-
 /* ── LANGUAGE SWITCHER ── */
-.lang-switcher {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 5px 8px;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 100px;
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  box-shadow: var(--glass-shadow-sm);
-  position: relative; overflow: hidden;
-}
+.lang-switcher { display:flex; align-items:center; gap:4px; padding:5px 8px; background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:100px; backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur); box-shadow:var(--glass-shadow-sm); position:relative; overflow:hidden; }
 .lang-switcher::before { content:''; position:absolute; inset:0; background:var(--glass-specular); pointer-events:none; }
-.lang-switcher > * { position: relative; z-index: 1; }
-.lang-btn {
-  width: 28px; height: 22px;
-  border: none; cursor: pointer;
-  border-radius: 6px;
-  font-size: 15px;
-  display: flex; align-items: center; justify-content: center;
-  background: transparent;
-  transition: background .2s, transform .15s;
-  -webkit-tap-highlight-color: transparent;
-  line-height: 1;
-  padding: 0;
-}
-.lang-btn:hover { background: var(--glass-bg-hover); transform: scale(1.12); }
-.lang-btn:active { transform: scale(.9); }
-.lang-btn.active {
-  background: var(--surface3);
-  box-shadow: 0 1px 4px rgba(0,0,0,.25);
-}
-.lang-divider { width: 1px; height: 14px; background: var(--glass-border); flex-shrink: 0; }
+.lang-switcher > * { position:relative; z-index:1; }
+.lang-btn { width:28px; height:22px; border:none; cursor:pointer; border-radius:6px; font-size:15px; display:flex; align-items:center; justify-content:center; background:transparent; transition:background .2s,transform .15s; -webkit-tap-highlight-color:transparent; line-height:1; padding:0; }
+.lang-btn:hover { background:var(--glass-bg-hover); transform:scale(1.12); }
+.lang-btn:active { transform:scale(.9); }
+.lang-btn.active { background:var(--surface3); box-shadow:0 1px 4px rgba(0,0,0,.25); }
+.lang-divider { width:1px; height:14px; background:var(--glass-border); flex-shrink:0; }
 
-/* ── НОВЫЕ ФИЧИ ── */
-
-/* Шаффл / Повтор кнопки в плеере */
+/* ── ШАФФЛ / ПОВТОР ── */
 .player-extra-btns { display:flex; align-items:center; justify-content:space-between; padding:0 14px 6px; }
 .player-extra-btn { width:22px; height:22px; background:none; border:none; cursor:pointer; color:var(--text-dim); display:flex; align-items:center; justify-content:center; border-radius:6px; transition:color .2s; -webkit-tap-highlight-color:transparent; padding:0; }
 .player-extra-btn.active { color:var(--accent-2); }
 .player-extra-btn:active { transform:scale(.85); }
 .player-extra-btn svg { width:13px; height:13px; }
 
-/* Mob extra btns */
-.mob-mp-extra { display:flex; align-items:center; gap:4px; }
-.mob-mp-extra-btn { width:26px; height:26px; background:none; border:none; cursor:pointer; color:var(--text-dim); display:flex; align-items:center; justify-content:center; border-radius:6px; -webkit-tap-highlight-color:transparent; }
-.mob-mp-extra-btn.active { color:var(--accent-2); }
-.mob-mp-extra-btn svg { width:12px; height:12px; }
+/* ── НОВЫЕ АНИМАЦИИ ── */
 
-/* Кнопка Share в hero */
+/* Shimmer на hero stats */
+.hero-stat-num {
+  background: linear-gradient(90deg, var(--text) 0%, var(--text-muted) 50%, var(--text) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmerText 3s linear infinite;
+}
+@keyframes shimmerText {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+/* Pulse ring вокруг кнопок воспроизведения */
+.mob-mp-play.is-playing::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text);
+  animation: pulseRing 1.5s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes pulseRing {
+  0% { transform: scale(1); opacity: .5; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+.mob-mp-play { position: relative; }
+
+/* Bounce при смене трека */
+@keyframes trackBounce {
+  0%,100% { transform: translateY(0); }
+  40% { transform: translateY(-4px); }
+  60% { transform: translateY(-2px); }
+}
+.track-change-anim { animation: trackBounce .4s cubic-bezier(.34,1.56,.64,1); }
+
+/* ── NEW badge ── */
+.style-new-badge { position:absolute; top:14px; right:14px; display:inline-flex; align-items:center; gap:4px; padding:3px 9px; background:var(--free-accent); color:#000; font-family:var(--font-mono); font-size:8px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; border-radius:100px; z-index:2; animation:newPulse 2.5s ease-in-out infinite; }
+.style-new-badge::before { content:''; width:4px; height:4px; border-radius:50%; background:#000; opacity:.5; }
+@keyframes newPulse { 0%,100%{box-shadow:0 0 0 0 rgba(48,209,88,.35)} 50%{box-shadow:0 0 0 5px rgba(48,209,88,0)} }
+
+/* ── FLINT мини-плеер ── */
+.style-mini-player { position:relative; z-index:2; margin-top:1rem; background:rgba(0,0,0,.2); border:1px solid rgba(255,255,255,.1); border-radius:12px; overflow:hidden; transition:background .2s; }
+[data-theme="light"] .style-mini-player { background:rgba(0,0,0,.06); border-color:rgba(0,0,0,.1); }
+.style-card:hover .style-mini-player,.style-card.touch-active .style-mini-player { background:rgba(0,0,0,.18); border-color:rgba(255,255,255,.18); }
+.smp-progress { height:2px; background:rgba(255,255,255,.12); }
+.smp-fill { height:100%; background:var(--free-accent); width:0%; transition:width .3s linear; }
+.smp-body { display:flex; align-items:center; gap:8px; padding:8px 10px; }
+.smp-art { width:28px; height:28px; border-radius:7px; background:linear-gradient(135deg,#222,#0a0a0a); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+[data-theme="light"] .smp-art { background:linear-gradient(135deg,#d0d0d5,#b8b8be); }
+.smp-vinyl { width:14px; height:14px; border-radius:50%; border:1.5px solid rgba(245,245,240,.15); position:relative; }
+.smp-vinyl::after { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:4px; height:4px; border-radius:50%; background:#111; }
+.smp-playing .smp-vinyl { animation:spin 3s linear infinite; }
+.smp-info { flex:1; min-width:0; }
+.smp-title { font-size:10px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.2; }
+.smp-sub { font-family:var(--font-mono); font-size:8px; color:var(--text-dim); margin-top:1px; }
+.smp-btn { width:26px; height:26px; border-radius:50%; background:var(--free-accent); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#000; flex-shrink:0; transition:transform .15s; -webkit-tap-highlight-color:transparent; }
+.smp-btn:active { transform:scale(.88); }
+.smp-btn svg { width:11px; height:11px; }
+.smp-times { display:flex; justify-content:space-between; padding:0 10px 5px; font-family:var(--font-mono); font-size:7px; color:var(--text-dim); }
+.style-card:hover .smp-title,.style-card.touch-active .smp-title { color:var(--card-hover-text); }
+.style-card:hover .smp-sub,.style-card.touch-active .smp-sub { color:rgba(0,0,0,.5); }
+.style-card:hover .smp-times,.style-card.touch-active .smp-times { color:rgba(0,0,0,.4); }
+
+/* Share toast */
 .share-toast { position:fixed; top:calc(80px + var(--safe-top)); left:50%; transform:translateX(-50%) translateY(-10px); background:var(--toast-bg); color:var(--text); border:1px solid var(--glass-border); border-radius:100px; padding:9px 18px; font-family:var(--font-mono); font-size:11px; box-shadow:var(--glass-shadow); z-index:9001; opacity:0; pointer-events:none; transition:all .35s cubic-bezier(.34,1.56,.64,1); white-space:nowrap; backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur); }
 .share-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-/* Индикатор клавиш (desktop подсказка) */
+/* Keys hint */
 .keys-hint { display:none; position:fixed; bottom:calc(1.5rem + var(--safe-bottom)); left:50%; transform:translateX(-50%); background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:100px; padding:5px 14px; font-family:var(--font-mono); font-size:9px; color:var(--text-dim); letter-spacing:.08em; backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur); z-index:50; white-space:nowrap; }
 @media (pointer:fine) { .keys-hint { display:flex; gap:10px; align-items:center; } }
 .key-badge { background:var(--surface3); border:1px solid var(--border); border-radius:4px; padding:1px 5px; font-size:9px; }
 
-/* Спящий режим — затемнение экрана при неактивности */
-#sleep-overlay { position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; z-index:8000; transition:opacity 2s ease; }
-#sleep-overlay.sleeping { opacity:.85; pointer-events:all; cursor:pointer; }
-
-/* Equalizer visual в hero badge когда играет */
+/* Hero EQ */
 .hero-eq { display:none; align-items:flex-end; gap:1.5px; height:10px; margin-left:4px; }
 .hero-eq.active { display:flex; }
 .hero-eq-bar { width:2px; background:var(--accent-2); border-radius:1px; transform-origin:bottom; }
@@ -531,105 +656,28 @@ body::before { content:''; position:fixed; inset:0; background-image:url("data:i
 .hero-eq-bar:nth-child(2){height:8px;animation:visAnim .6s ease-in-out infinite alternate;animation-delay:.1s}
 .hero-eq-bar:nth-child(3){height:10px;animation:visAnim .6s ease-in-out infinite alternate;animation-delay:.2s}
 
-/* Improved mobile: content padding-bottom for mini player */
+/* Sleep overlay */
+#sleep-overlay { position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; z-index:8000; transition:opacity 2s ease; }
+#sleep-overlay.sleeping { opacity:.85; pointer-events:all; cursor:pointer; }
+
+@media (max-width:900px) { .hero { padding-bottom:calc(180px + var(--safe-bottom)); } }
+@media (min-width:901px) { .player-card:hover { box-shadow:var(--glass-shadow),0 0 0 1px var(--glass-border-strong); } }
+
+/* ── ОПТИМИЗАЦИЯ МОБАЙЛ ── */
 @media (max-width:900px) {
-  .hero { padding-bottom: calc(160px + var(--safe-bottom)); }
+  /* Отключаем тяжёлые blur-эффекты на слабых устройствах */
+  @media (prefers-reduced-motion: no-preference) {
+    .mob-miniplayer, .mob-nav { backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%); }
+  }
+  .hero-bg-grid { animation-duration: 40s; } /* медленнее = меньше нагрузки */
+  /* Touch targets минимум 44px */
+  .mob-mp-btn, .mob-mp-play { min-width:44px; min-height:44px; }
+  .mob-nav-item { min-width: 52px; }
+  /* Убираем hover-эффекты на мобиле */
+  .style-card::after { display:none; }
+  .style-card { transition: transform .2s; }
+  .style-card:active { transform: scale(.98); }
 }
-
-/* PC: better player shadow on hover */
-@media (min-width:901px) {
-  .player-card:hover { box-shadow: var(--glass-shadow), 0 0 0 1px var(--glass-border-strong); }
-}
-
-
-/* NEW badge на карточке стиля */
-.style-new-badge {
-  position: absolute;
-  top: 14px; right: 14px;
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 9px;
-  background: var(--free-accent);
-  color: #000;
-  font-family: var(--font-mono);
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  border-radius: 100px;
-  z-index: 2;
-  animation: newPulse 2.5s ease-in-out infinite;
-}
-.style-new-badge::before {
-  content: '';
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: #000;
-  opacity: .5;
-}
-@keyframes newPulse {
-  0%,100% { box-shadow: 0 0 0 0 rgba(48,209,88,.35); }
-  50% { box-shadow: 0 0 0 5px rgba(48,209,88,0); }
-}
-
-/* Мини-плеер внутри карточки стиля */
-.style-mini-player {
-  position: relative; z-index: 2;
-  margin-top: 1rem;
-  background: rgba(0,0,0,.2);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: background .2s;
-}
-[data-theme="light"] .style-mini-player {
-  background: rgba(0,0,0,.06);
-  border-color: rgba(0,0,0,.1);
-}
-.style-card:hover .style-mini-player,
-.style-card.touch-active .style-mini-player {
-  background: rgba(0,0,0,.18);
-  border-color: rgba(255,255,255,.18);
-}
-.smp-progress { height: 2px; background: rgba(255,255,255,.12); }
-.smp-fill { height: 100%; background: var(--free-accent); width: 0%; transition: width .3s linear; }
-.smp-body { display: flex; align-items: center; gap: 8px; padding: 8px 10px; }
-.smp-art {
-  width: 28px; height: 28px; border-radius: 7px;
-  background: linear-gradient(135deg,#222,#0a0a0a);
-  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-}
-[data-theme="light"] .smp-art { background: linear-gradient(135deg,#d0d0d5,#b8b8be); }
-.smp-vinyl {
-  width: 14px; height: 14px; border-radius: 50%;
-  border: 1.5px solid rgba(245,245,240,.15);
-  position: relative;
-}
-.smp-vinyl::after {
-  content: ''; position: absolute;
-  top: 50%; left: 50%; transform: translate(-50%,-50%);
-  width: 4px; height: 4px; border-radius: 50%;
-  background: #111;
-}
-.smp-playing .smp-vinyl { animation: spin 3s linear infinite; }
-.smp-info { flex: 1; min-width: 0; }
-.smp-title { font-size: 10px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
-.smp-sub { font-family: var(--font-mono); font-size: 8px; color: var(--text-dim); margin-top: 1px; }
-.smp-btn {
-  width: 26px; height: 26px; border-radius: 50%;
-  background: var(--free-accent);
-  border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  color: #000; flex-shrink: 0;
-  transition: transform .15s;
-  -webkit-tap-highlight-color: transparent;
-}
-.smp-btn:active { transform: scale(.88); }
-.smp-btn svg { width: 11px; height: 11px; }
-.smp-times { display: flex; justify-content: space-between; padding: 0 10px 5px; font-family: var(--font-mono); font-size: 7px; color: var(--text-dim); }
-/* На светлой теме корректируем текст в плеере при ховере карточки */
-.style-card:hover .smp-title, .style-card.touch-active .smp-title { color: var(--card-hover-text); }
-.style-card:hover .smp-sub, .style-card.touch-active .smp-sub { color: rgba(0,0,0,.5); }
-.style-card:hover .smp-times, .style-card.touch-active .smp-times { color: rgba(0,0,0,.4); }
 
 audio { display:none; }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
@@ -648,13 +696,13 @@ audio { display:none; }
 
 <header class="top-bar" id="topBar">
   <a href="#" class="top-bar-logo">MANEWON<span>BEATS</span></a>
-    <div class="lang-switcher">
-      <button class="lang-btn active" id="langRu" onclick="setLang('ru')" title="Русский">🇷🇺</button>
-      <div class="lang-divider"></div>
-      <button class="lang-btn" id="langEn" onclick="setLang('en')" title="English">🇬🇧</button>
-      <div class="lang-divider"></div>
-      <button class="lang-btn" id="langUk" onclick="setLang('uk')" title="Українська">🇺🇦</button>
-    </div>
+  <div class="lang-switcher">
+    <button class="lang-btn active" id="langRu" onclick="setLang('ru')" title="Русский">🇷🇺</button>
+    <div class="lang-divider"></div>
+    <button class="lang-btn" id="langEn" onclick="setLang('en')" title="English">🇬🇧</button>
+    <div class="lang-divider"></div>
+    <button class="lang-btn" id="langUk" onclick="setLang('uk')" title="Українська">🇺🇦</button>
+  </div>
   <button class="theme-toggle" onclick="toggleTheme()">
     <span class="toggle-icon" id="toggleIcon">🌙</span>
     <div class="toggle-track"><div class="toggle-thumb"></div></div>
@@ -667,10 +715,10 @@ audio { display:none; }
   <div class="hero-orb"></div>
   <div class="hero-content">
     <div class="hero-badge"><span class="dot"></span><span class="i18n" data-ru="Beat Store — Online" data-en="Beat Store — Online" data-uk="Beat Store — Online">Beat Store — Online</span><div class="hero-eq" id="heroEq"><div class="hero-eq-bar"></div><div class="hero-eq-bar"></div><div class="hero-eq-bar"></div></div></div>
-    <h1 class="hero-title">MANEWON<span>BEATS</span></h1>
+    <h1 class="hero-title" data-glitch="MANEWON">MANEWON<span>BEATS</span></h1>
     <p class="hero-sub"><span class="i18n" data-ru="West Coast · Digicore · Plugg · Jerk · Dabbackwood" data-en="West Coast · Digicore · Plugg · Jerk · Dabbackwood" data-uk="West Coast · Digicore · Plugg · Jerk · Dabbackwood">West Coast · Digicore · Plugg · Jerk · Dabbackwood</span></p>
     <div class="hero-cta">
-      <button class="btn btn-primary" onclick="openModal()"><span class="i18n" data-ru="🎵 Заказать бит" data-en="🎵 Order a Beat" data-uk="🎵 Замовити біт">🎵 Заказать бит</span></button>
+      <button class="btn btn-primary ripple-container" onclick="openModal()"><span class="i18n" data-ru="🎵 Заказать бит" data-en="🎵 Order a Beat" data-uk="🎵 Замовити біт">🎵 Заказать бит</span></button>
       <a href="#free" class="btn btn-outline"><span class="i18n" data-ru="🎁 Фри биты" data-en="🎁 Free Beats" data-uk="🎁 Фрі біти">🎁 Фри биты</span></a>
       <button class="btn btn-outline" onclick="sharesite()" style="padding:12px 16px"><span>🔗</span></button>
     </div>
@@ -704,19 +752,18 @@ audio { display:none; }
   <p class="section-label reveal"><span class="i18n" data-ru="/ стили" data-en="/ styles" data-uk="/ стилі">/ стили</span></p>
   <h2 class="section-title reveal"><span class="i18n" data-ru="Мои<br>направления" data-en="My<br>Styles" data-uk="Мої<br>напрямки">Мои<br>направления</span></h2>
   <div class="styles-grid reveal">
-    <div class="style-card"><div class="style-num">01</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">WEST COAST</div><div class="style-desc"><span class="i18n" data-ru="Классический калифорнийский звук. Lowrider vibes, heavy 808s, funk samples." data-en="Classic California sound. Lowrider vibes, heavy 808s, funk samples." data-uk="Класичний каліфорнійський звук. Lowrider vibes, heavy 808s, funk samples.">Классический калифорнийский звук. Lowrider vibes, heavy 808s, funk samples.</span></div><div class="style-tag">G-Funk · Gangsta</div></div>
-    <div class="style-card"><div class="style-num">02</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">DIGICORE</div><div class="style-desc"><span class="i18n" data-ru="Экспериментальный интернет-рэп. Glitchy drums, distorted synths, hyperpop влияние." data-en="Experimental internet rap. Glitchy drums, distorted synths, hyperpop influence." data-uk="Експериментальний інтернет-реп. Glitchy drums, distorted synths, hyperpop вплив.">Экспериментальный интернет-рэп. Glitchy drums, distorted synths, hyperpop влияние.</span></div><div class="style-tag">Hyperpop · Emo</div></div>
-    <div class="style-card"><div class="style-num">03</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">PLUGG</div><div class="style-desc"><span class="i18n" data-ru="Атмосферные, dreamy биты. Melodic 808s, лёгкие перкуссии, трип-хоп атмосфера." data-en="Atmospheric, dreamy beats. Melodic 808s, light percussion, trip-hop vibes." data-uk="Атмосферні, dreamy біти. Melodic 808s, легкі перкусії, три-хоп атмосфера.">Атмосферные, dreamy биты. Melodic 808s, лёгкие перкуссии, трип-хоп атмосфера.</span></div><div class="style-tag">ATL · Dreamy</div></div>
-    <div class="style-card"><div class="style-num">04</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">JERK</div><div class="style-desc"><span class="i18n" data-ru="Энергичный LA стиль. Bouncy drums, fast BPM, электронные элементы и свэг." data-en="Energetic LA style. Bouncy drums, fast BPM, electronic elements and swagger." data-uk="Енергійний LA стиль. Bouncy drums, fast BPM, електронні елементи та свег.">Энергичный LA стиль. Bouncy drums, fast BPM, электронные элементы и свэг.</span></div><div class="style-tag">LA · Club</div></div>
-    <div class="style-card"><div class="style-num">05</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">DABBACKWOOD</div><div class="style-desc"><span class="i18n" data-ru="Type beat в стиле Dab. Тяжёлые 808s, тёмные мелодии, trap элементы." data-en="Dab-style type beat. Heavy 808s, dark melodies, trap elements." data-uk="Type beat у стилі Dab. Важкі 808s, темні мелодії, trap елементи.">Type beat в стиле Dab. Тяжёлые 808s, тёмные мелодии, trap элементы.</span></div><div class="style-tag">Trap · Dark</div></div>
+    <div class="style-card"><div class="style-num">01</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">WEST COAST</div><div class="style-desc"><span class="i18n" data-ru="Классический калифорнийский звук. Lowrider vibes, heavy 808s, funk samples." data-en="Classic California sound. Lowrider vibes, heavy 808s, funk samples." data-uk="Класичний каліфорнійський звук. Lowrider vibes, heavy 808s, funk samples.">Классический калифорнийский звук.</span></div><div class="style-tag">G-Funk · Gangsta</div></div>
+    <div class="style-card"><div class="style-num">02</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">DIGICORE</div><div class="style-desc"><span class="i18n" data-ru="Экспериментальный интернет-рэп. Glitchy drums, distorted synths, hyperpop влияние." data-en="Experimental internet rap. Glitchy drums, distorted synths, hyperpop influence." data-uk="Експериментальний інтернет-реп. Glitchy drums, distorted synths, hyperpop вплив.">Экспериментальный интернет-рэп.</span></div><div class="style-tag">Hyperpop · Emo</div></div>
+    <div class="style-card"><div class="style-num">03</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">PLUGG</div><div class="style-desc"><span class="i18n" data-ru="Атмосферные, dreamy биты. Melodic 808s, лёгкие перкуссии, трип-хоп атмосфера." data-en="Atmospheric, dreamy beats. Melodic 808s, light percussion, trip-hop vibes." data-uk="Атмосферні, dreamy біти. Melodic 808s, легкі перкусії, три-хоп атмосфера.">Атмосферные, dreamy биты.</span></div><div class="style-tag">ATL · Dreamy</div></div>
+    <div class="style-card"><div class="style-num">04</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">JERK</div><div class="style-desc"><span class="i18n" data-ru="Энергичный LA стиль. Bouncy drums, fast BPM, электронные элементы и свэг." data-en="Energetic LA style. Bouncy drums, fast BPM, electronic elements and swagger." data-uk="Енергійний LA стиль. Bouncy drums, fast BPM, електронні елементи та свег.">Энергичный LA стиль.</span></div><div class="style-tag">LA · Club</div></div>
+    <div class="style-card"><div class="style-num">05</div><div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="style-name">DABBACKWOOD</div><div class="style-desc"><span class="i18n" data-ru="Type beat в стиле Dab. Тяжёлые 808s, тёмные мелодии, trap элементы." data-en="Dab-style type beat. Heavy 808s, dark melodies, trap elements." data-uk="Type beat у стилі Dab. Важкі 808s, темні мелодії, trap елементи.">Type beat в стиле Dab.</span></div><div class="style-tag">Trap · Dark</div></div>
     <div class="style-card" id="flintCard">
       <div class="style-new-badge">✦ New</div>
       <div class="style-num">06</div>
       <div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
       <div class="style-name">FLINT</div>
-      <div class="style-desc"><span class="i18n" data-ru="Жёсткий уличный звук из Мичигана. Gritty 808s, мрачные сэмплы, raw атмосфера." data-en="Hard street sound from Michigan. Gritty 808s, dark samples, raw atmosphere." data-uk="Жорсткий вуличний звук з Мічигану. Gritty 808s, похмурі семпли, raw атмосфера.">Жёсткий уличный звук из Мичигана. Gritty 808s, мрачные сэмплы, raw атмосфера.</span></div>
+      <div class="style-desc"><span class="i18n" data-ru="Жёсткий уличный звук из Мичигана. Gritty 808s, мрачные сэмплы, raw атмосфера." data-en="Hard street sound from Michigan. Gritty 808s, dark samples, raw atmosphere." data-uk="Жорсткий вуличний звук з Мічигану. Gritty 808s, похмурі семпли, raw атмосфера.">Жёсткий уличный звук из Мичигана.</span></div>
       <div class="style-tag">Michigan · Raw</div>
-      <!-- Мини-плеер стиля FLINT -->
       <div class="style-mini-player" id="smpWrap">
         <div class="smp-progress"><div class="smp-fill" id="smpFill"></div></div>
         <div class="smp-body">
@@ -745,7 +792,7 @@ audio { display:none; }
       </div>
       <div class="free-top-badge reveal"><span class="free-badge-dot"></span>5 треков · free</div>
     </div>
-    <p class="free-desc reveal"><span class="i18n" data-ru="Версию без эффектов можно найти в ТГК. Чтобы использовать бесплатно — просто отметь <strong style='color:var(--text)'>@manewon888</strong> в посте или сторис. Единственное условие 🤝" data-en="The clean version (no effects) is available in the TG channel. To use for free — just tag <strong style='color:var(--text)'>@manewon888</strong> in your post or story. That's the only rule 🤝" data-uk="Версію без ефектів можна знайти в ТГК. Щоб використовувати безкоштовно — просто відмітьте <strong style='color:var(--text)'>@manewon888</strong> у пості або сторіс. Єдина умова 🤝">Версію без ефектів можна знайти в ТГК.</span></p>
+    <p class="free-desc reveal"><span class="i18n" data-ru="Версию без эффектов можно найти в ТГК. Чтобы использовать бесплатно — просто отметь <strong style='color:var(--text)'>@manewon888</strong> в посте или сторис. Единственное условие 🤝" data-en="The clean version is in the TG channel. To use for free — tag <strong style='color:var(--text)'>@manewon888</strong> in your post or story. That's the only rule 🤝" data-uk="Версію без ефектів можна знайти в ТГК. Відмітьте <strong style='color:var(--text)'>@manewon888</strong>. Єдина умова 🤝">Версію без ефектів можна знайти в ТГК.</span></p>
     <div class="free-list reveal" id="freeList"></div>
     <div class="free-cta-block reveal">
       <div>
@@ -765,7 +812,7 @@ audio { display:none; }
   <h2 class="section-title reveal"><span class="i18n" data-ru="Лицензии" data-en="Licenses" data-uk="Ліцензії">Лицензии</span></h2>
   <div class="pricing-grid">
     <div class="pricing-card reveal reveal-delay-1"><div class="pricing-tier"><span class="i18n" data-ru="Базовая" data-en="Basic" data-uk="Базова">Базовая</span></div><div class="pricing-price"><sub>₽</sub>500</div><div class="pricing-note"><span class="i18n" data-ru="MP3 лицензия" data-en="MP3 license" data-uk="MP3 ліцензія">MP3 лицензия</span></div><ul class="pricing-features"><li><span class="i18n" data-ru="MP3 файл (320kbps)" data-en="MP3 file (320kbps)" data-uk="MP3 файл (320kbps)">MP3 файл (320kbps)</span></li><li><span class="i18n" data-ru="До 10.000 стримов" data-en="Up to 10,000 streams" data-uk="До 10 000 стримів">До 10.000 стримов</span></li><li><span class="i18n" data-ru="Некоммерческое использование" data-en="Non-commercial use" data-uk="Некомерційне використання">Некоммерческое использование</span></li><li><span class="i18n" data-ru="1 релиз" data-en="1 release" data-uk="1 реліз">1 релиз</span></li></ul><a href="https://t.me/KVXNT" class="pricing-btn" target="_blank"><span class="i18n" data-ru="Заказать" data-en="Order" data-uk="Замовити">Заказать</span></a></div>
-    <div class="pricing-card featured reveal reveal-delay-2"><div class="pricing-badge">Popular</div><div class="pricing-tier"><span class="i18n" data-ru="Стандарт" data-en="Standard" data-uk="Стандарт">Стандарт</span></div><div class="pricing-price"><sub>₽</sub>1500</div><div class="pricing-note"><span class="i18n" data-ru="WAV + MP3" data-en="WAV + MP3" data-uk="WAV + MP3">WAV + MP3</span></div><ul class="pricing-features"><li><span class="i18n" data-ru="WAV + MP3 файлы" data-en="WAV + MP3 files" data-uk="WAV + MP3 файли">WAV + MP3 файлы</span></li><li><span class="i18n" data-ru="До 100.000 стримов" data-en="Up to 100,000 streams" data-uk="До 100 000 стримів">До 100.000 стримов</span></li><li><span class="i18n" data-ru="Коммерческое использование" data-en="Commercial use" data-uk="Комерційне використання">Коммерческое использование</span></li><li><span class="i18n" data-ru="Дистрибуция на платформах" data-en="Distribution on platforms" data-uk="Дистрибуція на платформах">Дистрибуция на платформах</span></li></ul><a href="https://t.me/KVXNT" class="pricing-btn" target="_blank"><span class="i18n" data-ru="Заказать" data-en="Order" data-uk="Замовити">Заказать</span></a></div>
+    <div class="pricing-card featured reveal reveal-delay-2"><div class="pricing-badge">Popular</div><div class="pricing-tier"><span class="i18n" data-ru="Стандарт" data-en="Standard" data-uk="Стандарт">Стандарт</span></div><div class="pricing-price"><sub>₽</sub>1500</div><div class="pricing-note">WAV + MP3</div><ul class="pricing-features"><li>WAV + MP3</li><li><span class="i18n" data-ru="До 100.000 стримов" data-en="Up to 100,000 streams" data-uk="До 100 000 стримів">До 100.000 стримов</span></li><li><span class="i18n" data-ru="Коммерческое использование" data-en="Commercial use" data-uk="Комерційне використання">Коммерческое использование</span></li><li><span class="i18n" data-ru="Дистрибуция на платформах" data-en="Distribution on platforms" data-uk="Дистрибуція на платформах">Дистрибуция на платформах</span></li></ul><a href="https://t.me/KVXNT" class="pricing-btn" target="_blank"><span class="i18n" data-ru="Заказать" data-en="Order" data-uk="Замовити">Заказать</span></a></div>
     <div class="pricing-card reveal reveal-delay-3"><div class="pricing-tier"><span class="i18n" data-ru="Эксклюзив" data-en="Exclusive" data-uk="Ексклюзив">Эксклюзив</span></div><div class="pricing-price"><sub>₽</sub>5000</div><div class="pricing-note"><span class="i18n" data-ru="Полные права" data-en="Full rights" data-uk="Повні права">Полные права</span></div><ul class="pricing-features"><li><span class="i18n" data-ru="Все форматы + стемы" data-en="All formats + stems" data-uk="Всі формати + стеми">Все форматы + стемы</span></li><li><span class="i18n" data-ru="Неограниченные стримы" data-en="Unlimited streams" data-uk="Необмежені стріми">Неограниченные стримы</span></li><li><span class="i18n" data-ru="Полные права на бит" data-en="Full rights to the beat" data-uk="Повні права на біт">Полные права на бит</span></li><li><span class="i18n" data-ru="Бит снимается с продажи" data-en="Beat removed from sale" data-uk="Біт знімається з продажу">Бит снимается с продажи</span></li></ul><a href="https://t.me/KVXNT" class="pricing-btn" target="_blank"><span class="i18n" data-ru="Купить" data-en="Buy" data-uk="Купити">Купить</span></a></div>
   </div>
 </section>
@@ -774,23 +821,23 @@ audio { display:none; }
   <p class="section-label reveal"><span class="i18n" data-ru="/ процесс" data-en="/ process" data-uk="/ процес">/ процесс</span></p>
   <h2 class="section-title reveal"><span class="i18n" data-ru="Как это<br>работает" data-en="How It<br>Works" data-uk="Як це<br>працює">Как это<br>работает</span></h2>
   <div class="process-steps reveal">
-    <div class="process-step"><div class="process-num">01</div><div><div class="process-title"><span class="i18n" data-ru="Свяжитесь со мной" data-en="Contact Me" data-uk="Зв&#39;яжіться зі мною">Свяжитесь со мной</span></div><div class="process-desc"><span class="i18n" data-ru="Напишите в Telegram, расскажите о проекте: стиль, BPM, референсы, настроение и бюджет." data-en="Message me on Telegram with your project details: style, BPM, references, mood and budget." data-uk="Напишіть у Telegram про проєкт: стиль, BPM, референси, настрій і бюджет.">Напишите в Telegram, расскажите о проекте: стиль, BPM, референсы, настроение и бюджет.</span></div></div></div>
-    <div class="process-step"><div class="process-num">02</div><div><div class="process-title"><span class="i18n" data-ru="Выбор бита" data-en="Pick a Beat" data-uk="Вибір біту">Выбор бита</span></div><div class="process-desc"><span class="i18n" data-ru="Слушаете каталог или заказываете кастомный бит под ваш запрос. Обсуждаем детали." data-en="Browse the catalog or order a custom beat. We discuss the details." data-uk="Слухаєте каталог або замовляєте кастомний біт. Обговорюємо деталі.">Слушаете каталог или заказываете кастомный бит под ваш запрос. Обсуждаем детали.</span></div></div></div>
-    <div class="process-step"><div class="process-num">03</div><div><div class="process-title"><span class="i18n" data-ru="Оплата" data-en="Payment" data-uk="Оплата">Оплата</span></div><div class="process-desc"><span class="i18n" data-ru="Оплата через Telegram Pay, карту или другой удобный метод. Работаем быстро и честно." data-en="Payment via Telegram Pay, card, or any convenient method. Fast and honest." data-uk="Оплата через Telegram Pay, картку або інший зручний спосіб. Швидко та чесно.">Оплата через Telegram Pay, карту или другой удобный метод. Работаем быстро и честно.</span></div></div></div>
-    <div class="process-step"><div class="process-num">04</div><div><div class="process-title"><span class="i18n" data-ru="Получаете файлы" data-en="Receive Files" data-uk="Отримуєте файли">Получаете файлы</span></div><div class="process-desc"><span class="i18n" data-ru="Отправляю все файлы согласно лицензии. Кастомные биты — в течение 24–72 часов." data-en="I send all files per the license. Custom beats — within 24–72 hours." data-uk="Надсилаю всі файли згідно з ліцензією. Кастомні біти — протягом 24–72 годин.">Отправляю все файлы согласно лицензии. Кастомные биты — в течение 24–72 часов.</span></div></div></div>
+    <div class="process-step"><div class="process-num">01</div><div><div class="process-title"><span class="i18n" data-ru="Свяжитесь со мной" data-en="Contact Me" data-uk="Зв'яжіться зі мною">Свяжитесь со мной</span></div><div class="process-desc"><span class="i18n" data-ru="Напишите в Telegram, расскажите о проекте: стиль, BPM, референсы, настроение и бюджет." data-en="Message me on Telegram with your project details: style, BPM, references, mood and budget." data-uk="Напишіть у Telegram про проєкт: стиль, BPM, референси, настрій і бюджет.">Напишите в Telegram.</span></div></div></div>
+    <div class="process-step"><div class="process-num">02</div><div><div class="process-title"><span class="i18n" data-ru="Выбор бита" data-en="Pick a Beat" data-uk="Вибір біту">Выбор бита</span></div><div class="process-desc"><span class="i18n" data-ru="Слушаете каталог или заказываете кастомный бит под ваш запрос." data-en="Browse the catalog or order a custom beat." data-uk="Слухаєте каталог або замовляєте кастомний біт.">Слушаете каталог или заказываете кастомный бит.</span></div></div></div>
+    <div class="process-step"><div class="process-num">03</div><div><div class="process-title"><span class="i18n" data-ru="Оплата" data-en="Payment" data-uk="Оплата">Оплата</span></div><div class="process-desc"><span class="i18n" data-ru="Оплата через Telegram Pay, карту или другой удобный метод." data-en="Payment via Telegram Pay, card, or any convenient method." data-uk="Оплата через Telegram Pay, картку або інший зручний спосіб.">Оплата через Telegram Pay, карту или другой удобный метод.</span></div></div></div>
+    <div class="process-step"><div class="process-num">04</div><div><div class="process-title"><span class="i18n" data-ru="Получаете файлы" data-en="Receive Files" data-uk="Отримуєте файли">Получаете файлы</span></div><div class="process-desc"><span class="i18n" data-ru="Отправляю все файлы согласно лицензии. Кастомные биты — в течение 24–72 часов." data-en="I send all files per the license. Custom beats — within 24–72 hours." data-uk="Надсилаю всі файли. Кастомні біти — протягом 24–72 годин.">Отправляю все файлы. Кастомные биты — в течение 24–72 часов.</span></div></div></div>
   </div>
 </section>
 
 <section class="section-wrap" id="faq">
   <p class="section-label reveal"><span class="i18n" data-ru="/ вопросы" data-en="/ faq" data-uk="/ питання">/ вопросы</span></p>
-  <h2 class="section-title reveal"><span class="i18n" data-ru="FAQ" data-en="FAQ" data-uk="FAQ">FAQ</span></h2>
+  <h2 class="section-title reveal">FAQ</h2>
   <div class="faq-list reveal">
-    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span class="i18n" data-ru="Сколько стоит кастомный бит?" data-en="How much does a custom beat cost?" data-uk="Скільки коштує кастомний біт?">Сколько стоит кастомный бит?</span><span class="faq-chevron">▾</span></button><div class="faq-a">Стоимость кастомного бита обговаривается индивидуально и зависит от сложности, стиля и сроков. Пишите в Telegram — обсудим детали и сделаем оффер специально для вас.</div></div>
-    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span class="i18n" data-ru="Как быстро готов кастомный бит?" data-en="How fast is a custom beat ready?" data-uk="Як швидко готовий кастомний біт?">Как быстро готов кастомный бит?</span><span class="faq-chevron">▾</span></button><div class="faq-a">Как правило, кастомный бит готов в течение 24–72 часов после получения всей нужной информации. Срочные заказы обсуждаются отдельно.</div></div>
-    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span class="i18n" data-ru="Можно ли доработать бит?" data-en="Can the beat be revised?" data-uk="Чи можна доопрацювати біт?">Можно ли доработать бит?</span><span class="faq-chevron">▾</span></button><div class="faq-a">Да! При стандартной и эксклюзивной лицензии предусмотрены правки. Расскажите что хотите изменить — подстроимся под вас.</div></div>
-    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span class="i18n" data-ru="Какие форматы файлов получу?" data-en="What file formats will I receive?" data-uk="Які формати файлів отримаю?">Какие форматы файлов получу?</span><span class="faq-chevron">▾</span></button><div class="faq-a">Базовая лицензия — MP3 320kbps. Стандарт — WAV + MP3. Эксклюзив — WAV + MP3 + стемы (раздельные дорожки). Все файлы без потерь качества.</div></div>
-    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span class="i18n" data-ru="Могу ли я монетизировать трек на YouTube?" data-en="Can I monetize my track on YouTube?" data-uk="Чи можу я монетизувати трек на YouTube?">Могу ли я монетизировать трек на YouTube?</span><span class="faq-chevron">▾</span></button><div class="faq-a">Да, при стандартной и эксклюзивной лицензии монетизация разрешена. Базовая лицензия — только некоммерческое использование.</div></div>
-    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span class="i18n" data-ru="Условия для фри битов?" data-en="Terms for free beats?" data-uk="Умови для фрі бітів?">Условия для фри битов?</span><span class="faq-chevron">▾</span></button><div class="faq-a">Фри биты доступны бесплатно при одном условии — отметь @manewon888 в посте или сторис где используешь бит. Коммерческое использование требует стандартной лицензии.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span class="i18n" data-ru="Сколько стоит кастомный бит?" data-en="How much does a custom beat cost?" data-uk="Скільки коштує кастомний біт?">Сколько стоит кастомный бит?</span><span class="faq-chevron">▾</span></button><div class="faq-a">Стоимость кастомного бита обговаривается индивидуально и зависит от сложности, стиля и сроков. Пишите в Telegram — обсудим детали.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span class="i18n" data-ru="Как быстро готов кастомный бит?" data-en="How fast is a custom beat ready?" data-uk="Як швидко готовий кастомний біт?">Как быстро готов кастомный бит?</span><span class="faq-chevron">▾</span></button><div class="faq-a">Как правило, кастомный бит готов в течение 24–72 часов после получения всей нужной информации.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span class="i18n" data-ru="Можно ли доработать бит?" data-en="Can the beat be revised?" data-uk="Чи можна доопрацювати біт?">Можно ли доработать бит?</span><span class="faq-chevron">▾</span></button><div class="faq-a">Да! При стандартной и эксклюзивной лицензии предусмотрены правки.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span class="i18n" data-ru="Какие форматы файлов получу?" data-en="What file formats will I receive?" data-uk="Які формати файлів отримаю?">Какие форматы файлов получу?</span><span class="faq-chevron">▾</span></button><div class="faq-a">Базовая — MP3 320kbps. Стандарт — WAV + MP3. Эксклюзив — WAV + MP3 + стемы.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span class="i18n" data-ru="Могу ли я монетизировать трек на YouTube?" data-en="Can I monetize my track on YouTube?" data-uk="Чи можу я монетизувати трек на YouTube?">Могу ли я монетизировать трек на YouTube?</span><span class="faq-chevron">▾</span></button><div class="faq-a">Да, при стандартной и эксклюзивной лицензии монетизация разрешена.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span class="i18n" data-ru="Условия для фри битов?" data-en="Terms for free beats?" data-uk="Умови для фрі бітів?">Условия для фри битов?</span><span class="faq-chevron">▾</span></button><div class="faq-a">Отметь @manewon888 в посте или сторис. Коммерческое использование требует стандартной лицензии.</div></div>
   </div>
 </section>
 
@@ -799,7 +846,7 @@ audio { display:none; }
   <h2 class="section-title reveal"><span class="i18n" data-ru="Мои<br>платформы" data-en="My<br>Platforms" data-uk="Мої<br>платформи">Мои<br>платформы</span></h2>
   <div class="projects-grid reveal">
     <a href="https://www.youtube.com/@manewon" class="project-link" target="_blank"><div class="project-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div><div class="project-text"><div class="project-name">YouTube</div><div class="project-label">@manewon</div></div><div class="project-arrow">↗</div></a>
-    <a href="https://soundcloud.com/manewon-147332809" class="project-link" target="_blank"><div class="project-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.175 12.225c-.015 0-.023.01-.023.025l-.296 1.65.296 1.612c0 .013.008.022.023.022.014 0 .024-.009.025-.022l.337-1.612-.337-1.65c-.001-.015-.011-.025-.025-.025zm-.899.828c-.018 0-.028.013-.028.03L0 14.5l.248 1.385c0 .016.01.028.028.028s.028-.012.028-.028l.283-1.385-.283-1.417c0-.017-.01-.03-.028-.03zm1.8-.332c-.02 0-.033.016-.033.035l-.265 1.744.265 1.695c0 .019.013.033.033.033.019 0 .034-.014.034-.033l.3-1.695-.3-1.744c0-.019-.015-.035-.034-.035zm.9-.09c-.022 0-.038.018-.038.04l-.23 1.834.23 1.772c0 .022.016.04.038.04s.038-.018.038-.04l.262-1.772-.262-1.834c0-.022-.016-.04-.038-.04zm.9.22c-.024 0-.042.02-.042.043l-.196 1.614.196 1.55c0 .024.018.043.042.043.023 0 .041-.019.041-.043l.223-1.55-.223-1.614c0-.023-.018-.043-.041-.043zm3.6-3.72c-.13 0-.232.1-.237.23-.011.222-.018.45-.018.68 0 .234.007.466.019.694.005.128.107.226.236.226.13 0 .234-.1.237-.23.012-.228.019-.456.019-.69 0-.23-.007-.46-.018-.683-.003-.13-.107-.227-.238-.227zM24 11.39c0-2.966-2.4-5.367-5.367-5.367-.765 0-1.494.161-2.152.45-.434-4.837-4.53-8.61-9.484-8.61-1.266 0-2.473.249-3.571.696-.39.155-.495.313-.498.453v16.6c.003.147.12.267.268.273H24V11.39z"/></svg></div><div class="project-text"><div class="project-name">SoundCloud</div><div class="project-label">manewon</div></div><div class="project-arrow">↗</div></a>
+    <a href="https://soundcloud.com/manewon-147332809" class="project-link" target="_blank"><div class="project-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.175 12.225c-.015 0-.023.01-.023.025l-.296 1.65.296 1.612c0 .013.008.022.023.022.014 0 .024-.009.025-.022l.337-1.612-.337-1.65c-.001-.015-.011-.025-.025-.025zm-.899.828c-.018 0-.028.013-.028.03L0 14.5l.248 1.385c0 .016.01.028.028.028s.028-.012.028-.028l.283-1.385-.283-1.417c0-.017-.01-.03-.028-.03zm1.8-.332c-.02 0-.033.016-.033.035l-.265 1.744.265 1.695c0 .019.013.033.033.033.019 0 .034-.014.034-.033l.3-1.695-.3-1.744c0-.019-.015-.035-.034-.035zm.9-.09c-.022 0-.038.018-.038.04l-.23 1.834.23 1.772c0 .022.016.04.038.04s.038-.018.038-.04l.262-1.772-.262-1.834c0-.022-.016-.04-.038-.04zm3.6-3.72c-.13 0-.232.1-.237.23-.011.222-.018.45-.018.68 0 .234.007.466.019.694.005.128.107.226.236.226.13 0 .234-.1.237-.23.012-.228.019-.456.019-.69 0-.23-.007-.46-.018-.683-.003-.13-.107-.227-.238-.227zM24 11.39c0-2.966-2.4-5.367-5.367-5.367-.765 0-1.494.161-2.152.45-.434-4.837-4.53-8.61-9.484-8.61-1.266 0-2.473.249-3.571.696-.39.155-.495.313-.498.453v16.6c.003.147.12.267.268.273H24V11.39z"/></svg></div><div class="project-text"><div class="project-name">SoundCloud</div><div class="project-label">manewon</div></div><div class="project-arrow">↗</div></a>
     <a href="https://t.me/manewon888" class="project-link" target="_blank"><div class="project-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></div><div class="project-text"><div class="project-name">Telegram канал</div><div class="project-label">@manewon888</div></div><div class="project-arrow">↗</div></a>
     <div class="project-link" style="cursor:pointer" onclick="copyContact()"><div class="project-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div><div class="project-text"><div class="project-name">Скопировать ник</div><div class="project-label">@KVXNT</div></div><div class="project-arrow">⌘</div></div>
   </div>
@@ -813,11 +860,12 @@ audio { display:none; }
     <a href="#pricing" class="footer-link"><span class="i18n" data-ru="Цены" data-en="Prices" data-uk="Ціни">Цены</span></a>
     <a href="#faq" class="footer-link">FAQ</a>
   </div>
-  <div class="footer-copy">© 2024 ManewonBeats</div>
+  <div class="footer-copy">© 2025 ManewonBeats</div>
 </footer>
 
 <audio id="bgAudio" preload="auto"></audio>
 
+<!-- DESKTOP PLAYER -->
 <div class="player" id="player">
   <button class="player-toggle-btn" onclick="togglePlayerCollapse()">
     <span class="player-toggle-icon" id="toggleChevron">▾</span>
@@ -830,11 +878,11 @@ audio { display:none; }
       </div>
       <div class="player-pill-track" id="pillTrackName">manewon — beat 1</div>
       <button class="player-pill-btn" onclick="togglePlay()">
-        <svg id="pillIconPlay" viewBox="0 0 24 24" fill="currentColor"><path class="icon-play" d="M8 5v14l11-7z"/></svg>
+        <svg id="pillIconPlay" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
       </button>
     </div>
     <div class="player-expanded" id="playerExpanded">
-      <div class="player-label"><span class="i18n" data-ru="NOW PLAYING" data-en="NOW PLAYING" data-uk="ЗАРАЗ ГРАЄ">NOW PLAYING</span></div>
+      <div class="player-label">NOW PLAYING</div>
       <div class="player-main">
         <div class="player-art"><div class="player-vinyl" id="vinyl"></div></div>
         <div class="player-info">
@@ -842,7 +890,7 @@ audio { display:none; }
           <div class="player-artist">@manewonbeats</div>
         </div>
         <button class="player-play" onclick="togglePlay()">
-          <svg id="iconPlay" viewBox="0 0 24 24" fill="currentColor"><path class="icon-play" d="M8 5v14l11-7z"/></svg>
+          <svg id="iconPlay" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
         </button>
       </div>
       <div class="player-nav">
@@ -885,23 +933,34 @@ audio { display:none; }
   </a>
 </div>
 
-<!-- iOS мини-плеер (только mobile) -->
+<!-- MOBILE MINI PLAYER — полностью переделан -->
 <div class="mob-miniplayer" id="mobMiniPlayer">
-  <div class="mob-mp-progress"><div class="mob-mp-progress-fill" id="mobMpFill"></div></div>
+  <div class="mob-mp-handle"></div>
+  <div class="mob-mp-progress">
+    <div class="mob-mp-progress-fill" id="mobMpFill"></div>
+  </div>
   <div class="mob-mp-body">
-    <div class="mob-mp-art"><div class="mob-mp-vinyl" id="mobMpVinyl"></div></div>
+    <div class="mob-mp-art">
+      <div class="mob-mp-vinyl" id="mobMpVinyl"></div>
+    </div>
     <div class="mob-mp-info">
       <div class="mob-mp-track" id="mobMpTrack">manewon — Beat 01</div>
       <div class="mob-mp-artist">@manewonbeats</div>
     </div>
+    <div class="mob-mp-eq" id="mobMpEq">
+      <div class="mob-mp-eq-bar"></div>
+      <div class="mob-mp-eq-bar"></div>
+      <div class="mob-mp-eq-bar"></div>
+      <div class="mob-mp-eq-bar"></div>
+    </div>
     <div class="mob-mp-btns">
-      <button class="mob-mp-btn" onclick="prevTrack()">
+      <button class="mob-mp-btn" id="mobPrevBtn" onclick="prevTrack()" aria-label="Previous">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
       </button>
-      <button class="mob-mp-play" id="mobMpPlayBtn" onclick="togglePlay()">
-        <svg id="mobMpIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" style="transform-origin:center;transform:translateX(1px)"/></svg>
+      <button class="mob-mp-play" id="mobMpPlayBtn" onclick="togglePlay()" aria-label="Play/Pause">
+        <svg id="mobMpIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
       </button>
-      <button class="mob-mp-btn" onclick="nextTrack()">
+      <button class="mob-mp-btn" id="mobNextBtn" onclick="nextTrack()" aria-label="Next">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2.5-6 5.5 3.9V8.1L8.5 12zM16 6h2v12h-2z"/></svg>
       </button>
     </div>
@@ -937,18 +996,32 @@ audio { display:none; }
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">×</button>
     <div class="modal-title"><span class="i18n" data-ru="ЗАКАЗ" data-en="ORDER" data-uk="ЗАМОВЛЕННЯ">ЗАКАЗ</span></div>
-    <p class="modal-sub"><span class="i18n" data-ru="Напишите мне в личные сообщения — расскажите о проекте, подберём идеальный бит." data-en="Message me directly — tell me about your project and we'll find the perfect beat." data-uk="Напишіть мені в особисті повідомлення — розкажіть про проєкт, підберемо ідеальний біт.">Напишите мне в личные сообщения — расскажите о проекте, подберём идеальный бит.</span></p>
+    <p class="modal-sub"><span class="i18n" data-ru="Напишите мне в личные сообщения — расскажите о проекте, подберём идеальный бит." data-en="Message me directly — tell me about your project and we'll find the perfect beat." data-uk="Напишіть мені — розкажіть про проєкт, підберемо ідеальний біт.">Напишите мне в личные сообщения.</span></p>
     <a href="https://t.me/KVXNT" class="modal-contact" target="_blank">
       <div class="modal-contact-icon"><svg viewBox="0 0 24 24" fill="white"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></div>
-      <div class="modal-contact-text"><span class="modal-contact-label"><span class="i18n" data-ru="Написать в Telegram" data-en="Message on Telegram" data-uk="Написати в Telegram">Написать в Telegram</span></span><span class="modal-contact-value">@KVXNT</span></div>
+      <div class="modal-contact-text"><span class="modal-contact-label">Telegram</span><span class="modal-contact-value">@KVXNT</span></div>
       <div class="modal-contact-arrow">→</div>
     </a>
-    <p class="modal-note"><span class="i18n" data-ru="Укажите: стиль, BPM, референсы, бюджет и сроки.<br>Отвечу быстро." data-en="Include: style, BPM, references, budget and timeline.<br>I reply fast." data-uk="Вкажіть: стиль, BPM, референси, бюджет і терміни.<br>Відповім швидко.">Укажите: стиль, BPM, референсы, бюджет и сроки.<br>Отвечу быстро.</span></p>
+    <p class="modal-note"><span class="i18n" data-ru="Укажите: стиль, BPM, референсы, бюджет и сроки.<br>Отвечу быстро." data-en="Include: style, BPM, references, budget and timeline.<br>I reply fast." data-uk="Вкажіть: стиль, BPM, референси, бюджет і терміни.<br>Відповім швидко.">Укажите: стиль, BPM, референсы, бюджет.<br>Отвечу быстро.</span></p>
   </div>
 </div>
 
+<div class="share-toast" id="shareToast">🔗 Ссылка скопирована!</div>
+<div class="keys-hint"><span class="key-badge">Space</span>Play/Pause <span class="key-badge">←</span><span class="key-badge">→</span>Треки <span class="key-badge">M</span>Mute <span class="key-badge">S</span>Шаффл</div>
+<div id="sleep-overlay" onclick="wakeUp()"></div>
+
 <script>
+// ══════════════════════════════════════════
+// CORE SVG ICONS
+// ══════════════════════════════════════════
+const ICON_PLAY  = '<path d="M8 5v14l11-7z"/>';
+const ICON_PAUSE = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+const ICON_VOL_ON  = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
+const ICON_VOL_OFF = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+
+// ══════════════════════════════════════════
 // PRELOADER
+// ══════════════════════════════════════════
 setTimeout(() => {
   const pre = document.getElementById('preloader');
   pre.classList.add('out');
@@ -956,7 +1029,9 @@ setTimeout(() => {
   animateCounters();
 }, 2000);
 
+// ══════════════════════════════════════════
 // THEME
+// ══════════════════════════════════════════
 function toggleTheme() {
   const html = document.documentElement;
   const isDark = html.getAttribute('data-theme') === 'dark';
@@ -973,16 +1048,20 @@ if (localStorage.getItem('theme') === 'light') {
   document.getElementById('metaTheme').content = '#f2f2f7';
 }
 
+// ══════════════════════════════════════════
 // TOP BAR SCROLL
+// ══════════════════════════════════════════
 window.addEventListener('scroll', () => {
   document.getElementById('topBar').classList.toggle('scrolled', window.scrollY > 50);
 }, { passive: true });
 
-// CURSOR
+// ══════════════════════════════════════════
+// CURSOR (desktop only)
+// ══════════════════════════════════════════
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursorRing');
-let mx=0,my=0,rx=0,ry=0;
 if (window.matchMedia('(pointer: fine)').matches) {
+  let mx=0,my=0,rx=0,ry=0;
   document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
   (function loop(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(loop); })();
   document.querySelectorAll('a,button,.style-card,.project-link,.pricing-card,.free-item').forEach(el => {
@@ -991,25 +1070,50 @@ if (window.matchMedia('(pointer: fine)').matches) {
   });
 }
 
+// ══════════════════════════════════════════
+// RIPPLE EFFECT
+// ══════════════════════════════════════════
+document.querySelectorAll('.ripple-container').forEach(btn => {
+  btn.addEventListener('click', e => {
+    const r = btn.getBoundingClientRect();
+    const size = Math.max(r.width, r.height);
+    const x = e.clientX - r.left - size/2;
+    const y = e.clientY - r.top - size/2;
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    ripple.style.cssText = `width:${size}px;height:${size}px;left:${x}px;top:${y}px`;
+    btn.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+  });
+});
+
+// ══════════════════════════════════════════
 // TOUCH style cards
+// ══════════════════════════════════════════
 document.querySelectorAll('.style-card').forEach(card => {
   card.addEventListener('touchstart', () => card.classList.add('touch-active'), { passive: true });
   card.addEventListener('touchend', () => setTimeout(() => card.classList.remove('touch-active'), 350));
 });
 
+// ══════════════════════════════════════════
 // MODAL
+// ══════════════════════════════════════════
 function openModal() { document.getElementById('modal').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeModal() { document.getElementById('modal').classList.remove('open'); document.body.style.overflow=''; }
 function handleOverlayClick(e) { if(e.target===document.getElementById('modal')) closeModal(); }
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 
-// REVEAL
+// ══════════════════════════════════════════
+// REVEAL ON SCROLL
+// ══════════════════════════════════════════
 const revealObs = new IntersectionObserver(entries => {
   entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.07 });
 document.querySelectorAll('.reveal').forEach(r => revealObs.observe(r));
 
-// MOB NAV
+// ══════════════════════════════════════════
+// MOB NAV — active section highlight
+// ══════════════════════════════════════════
 const navItems = document.querySelectorAll('.mob-nav-item[data-section]');
 const secIds = ['home','free','pricing','process','faq','links'];
 const sectionObs = new IntersectionObserver(entries => {
@@ -1018,41 +1122,56 @@ const sectionObs = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.25 });
 secIds.map(id=>document.getElementById(id)).filter(Boolean).forEach(s=>sectionObs.observe(s));
-function showMobNav() {
-  const isMob = window.innerWidth<=900;
-  document.getElementById('mobNav').style.display = isMob?'block':'none';
-  document.getElementById('mobMiniPlayer').style.display = isMob?'block':'none';
-}
-showMobNav(); window.addEventListener('resize', showMobNav, { passive:true });
 
+function showMobNav() {
+  const isMob = window.innerWidth <= 900;
+  document.getElementById('mobNav').style.display = isMob ? 'block' : 'none';
+  document.getElementById('mobMiniPlayer').style.display = isMob ? 'block' : 'none';
+}
+showMobNav();
+window.addEventListener('resize', showMobNav, { passive:true });
+
+// ══════════════════════════════════════════
 // FAQ
+// ══════════════════════════════════════════
 function toggleFaq(btn) {
   const item = btn.closest('.faq-item'), isOpen = item.classList.contains('open');
   document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
   if(!isOpen) item.classList.add('open');
 }
 
+// ══════════════════════════════════════════
 // TOAST
+// ══════════════════════════════════════════
 function showToast(msg) {
-  const t = document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'), 2200);
 }
-function copyContact() { navigator.clipboard.writeText('@KVXNT').then(()=>showToast('Скопировано: @KVXNT')); }
+function copyContact() {
+  navigator.clipboard.writeText('@KVXNT').then(()=>showToast('Скопировано: @KVXNT'));
+}
 
+// ══════════════════════════════════════════
 // COUNTERS
+// ══════════════════════════════════════════
 function animateCounters() {
   document.querySelectorAll('[data-count]').forEach(el => {
-    const target=parseInt(el.dataset.count), dur=1200, start=performance.now();
+    const target = parseInt(el.dataset.count), dur = 1200, start = performance.now();
     function upd(now) {
-      const t=Math.min((now-start)/dur,1), ease=1-Math.pow(1-t,3);
-      el.textContent=Math.round(ease*target)+(target===100?'%':'+');
-      if(t<1) requestAnimationFrame(upd); else el.textContent=target+(target===100?'%':'+');
+      const t = Math.min((now-start)/dur, 1), ease = 1-Math.pow(1-t, 3);
+      el.textContent = Math.round(ease*target) + (target===100?'%':'+');
+      if(t<1) requestAnimationFrame(upd);
+      else el.textContent = target + (target===100?'%':'+');
     }
     requestAnimationFrame(upd);
   });
 }
 
-// ===== TRACKS =====
+// ══════════════════════════════════════════
+// TRACKS DATA
+// ══════════════════════════════════════════
 const TRACKS = [
   { file:'music.mp3',  name:'Beat 01', style:'West Coast' },
   { file:'music2.mp3', name:'Beat 02', style:'Plugg'      },
@@ -1061,138 +1180,134 @@ const TRACKS = [
   { file:'music5.mp3', name:'Beat 05', style:'Dabbackwood'},
 ];
 
+// ══════════════════════════════════════════
+// PLAYER STATE
+// ══════════════════════════════════════════
 const audio = document.getElementById('bgAudio');
-const iconPlay = document.getElementById('iconPlay');
-const pillIconPlay = document.getElementById('pillIconPlay');
-const timelineFill = document.getElementById('timelineFill');
-const timeCurrent = document.getElementById('timeCurrent');
-const timeDuration = document.getElementById('timeDuration');
-const volIcon = document.getElementById('volIcon');
-const playerEl = document.getElementById('player');
-const trackNameEl = document.getElementById('trackName');
+audio.volume = 0.6;
+
+let isPlaying   = false;
+let isMuted     = false;
+let isCollapsed = false;
+let currentTrack = 0;
+let shuffleMode = false;
+let repeatMode  = false;
+
+// DOM refs
+const playerEl      = document.getElementById('player');
+const iconPlay      = document.getElementById('iconPlay');
+const pillIconPlay  = document.getElementById('pillIconPlay');
+const timelineFill  = document.getElementById('timelineFill');
+const timeCurrent   = document.getElementById('timeCurrent');
+const timeDuration  = document.getElementById('timeDuration');
+const volIcon       = document.getElementById('volIcon');
+const trackNameEl   = document.getElementById('trackName');
 const pillTrackName = document.getElementById('pillTrackName');
-const trackCounter = document.getElementById('trackCounter');
+const trackCounter  = document.getElementById('trackCounter');
+const mobMpTrack    = document.getElementById('mobMpTrack');
+const mobMpIcon     = document.getElementById('mobMpIcon');
+const mobMpVinyl    = document.getElementById('mobMpVinyl');
+const mobMpFill     = document.getElementById('mobMpFill');
+const mobMpPlayBtn  = document.getElementById('mobMpPlayBtn');
+const mobMpEq       = document.getElementById('mobMpEq');
+const heroEq        = document.getElementById('heroEq');
 
-let isPlaying=false, isMuted=false, isCollapsed=false, currentTrack=0;
-audio.volume=0.6;
+// ══════════════════════════════════════════
+// CENTRAL UI UPDATE — вызывается ВЕЗДЕ
+// ══════════════════════════════════════════
+function updateAllPlayUI() {
+  const trackFullName = 'manewon — ' + TRACKS[currentTrack].name;
 
-const PLAY='<path d="M8 5v14l11-7z"/>';
-const PAUSE='<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-const VOL_ON='<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
-const VOL_OFF='<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+  // ── Desktop player ──
+  trackNameEl.textContent   = trackFullName;
+  pillTrackName.textContent = trackFullName;
+  trackCounter.textContent  = (currentTrack+1) + ' / ' + TRACKS.length;
 
-function fmt(s) { if(!s||isNaN(s)) return '0:00'; return Math.floor(s/60)+':'+(Math.floor(s%60)<10?'0':'')+Math.floor(s%60); }
+  if(isPlaying) {
+    iconPlay.innerHTML     = ICON_PAUSE;
+    pillIconPlay.innerHTML = ICON_PAUSE;
+    playerEl.classList.add('playing');
+  } else {
+    iconPlay.innerHTML     = ICON_PLAY;
+    pillIconPlay.innerHTML = ICON_PLAY;
+    playerEl.classList.remove('playing');
+  }
 
+  // ── Mobile mini player ──
+  if(mobMpTrack) mobMpTrack.textContent = trackFullName;
+
+  // ИКОНКА PLAY/PAUSE — главный фикс
+  if(mobMpIcon) {
+    mobMpIcon.innerHTML = isPlaying ? ICON_PAUSE : ICON_PLAY;
+  }
+
+  // Pulse ring на кнопке
+  if(mobMpPlayBtn) {
+    mobMpPlayBtn.classList.toggle('is-playing', isPlaying);
+  }
+
+  // Vinyl spin
+  if(mobMpVinyl) {
+    if(isPlaying) {
+      mobMpVinyl.classList.add('spinning');
+    } else {
+      mobMpVinyl.classList.remove('spinning');
+    }
+  }
+
+  // EQ визуализатор в мини-плеере
+  if(mobMpEq) mobMpEq.classList.toggle('active', isPlaying);
+
+  // Hero EQ badge
+  if(heroEq) heroEq.classList.toggle('active', isPlaying);
+
+  // Tracklist + free list
+  updateTrackListUI();
+  updateFreeListUI();
+}
+
+// ══════════════════════════════════════════
+// TRACKLIST
+// ══════════════════════════════════════════
 function buildTrackList() {
-  const list = document.getElementById('trackList'); list.innerHTML='';
-  TRACKS.forEach((t,i)=>{
-    const row=document.createElement('div');
-    row.className='player-track-item'+(i===currentTrack?' active':'');
-    row.innerHTML=`
+  const list = document.getElementById('trackList');
+  list.innerHTML = '';
+  TRACKS.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'player-track-item' + (i===currentTrack?' active':'');
+    row.innerHTML = `
       <div class="track-item-num">${i===currentTrack?'':i+1}</div>
       <div class="track-item-vis" style="display:${i===currentTrack?'flex':'none'}">
         <div class="track-item-bar"></div><div class="track-item-bar"></div><div class="track-item-bar"></div>
       </div>
       <div class="track-item-name">manewon — ${t.name}</div>
       <div class="track-item-dur" id="pdur-${i}">—:——</div>`;
-    row.addEventListener('click',()=>loadTrack(i,true));
+    row.addEventListener('click', () => loadTrack(i, true));
     list.appendChild(row);
   });
 }
 
-function updateMobMp() {
-  const name='manewon — '+TRACKS[currentTrack].name;
-  const el=document.getElementById('mobMpTrack'); if(el) el.textContent=name;
-  const icon=document.getElementById('mobMpIcon'); if(icon) icon.innerHTML=isPlaying?PAUSE:PLAY;
-  // vinyl spin
-  const vinyl=document.getElementById('mobMpVinyl');
-  if(vinyl) { vinyl.style.animation=isPlaying?'spin 3s linear infinite':'none'; }
-  const eq=document.getElementById('heroEq'); if(eq) eq.classList.toggle('active',isPlaying);
-}
-
-function updateTrackUI() {
-  const name='manewon — '+TRACKS[currentTrack].name;
-  trackNameEl.textContent=name; pillTrackName.textContent=name;
-  trackCounter.textContent=(currentTrack+1)+' / '+TRACKS.length;
-  document.querySelectorAll('.player-track-item').forEach((row,i)=>{
-    row.classList.toggle('active',i===currentTrack);
-    row.querySelector('.track-item-num').textContent=i===currentTrack?'':i+1;
-    row.querySelector('.track-item-vis').style.display=i===currentTrack?'flex':'none';
+function updateTrackListUI() {
+  document.querySelectorAll('.player-track-item').forEach((row, i) => {
+    row.classList.toggle('active', i===currentTrack);
+    const num = row.querySelector('.track-item-num');
+    const vis = row.querySelector('.track-item-vis');
+    if(num) num.textContent = i===currentTrack ? '' : i+1;
+    if(vis) vis.style.display = i===currentTrack ? 'flex' : 'none';
   });
-  updateFreeList();
-  updateMobMp();
 }
 
-function loadTrack(index, autoplay) {
-  currentTrack=index; audio.src=TRACKS[index].file; audio.load();
-  updateTrackUI();
-  timelineFill.style.width='0%'; timeCurrent.textContent='0:00'; timeDuration.textContent='—:——';
-  if(autoplay) audio.play().then(()=>{ isPlaying=true; playerEl.classList.add('playing'); iconPlay.innerHTML=PAUSE; pillIconPlay.innerHTML=PAUSE; }).catch(()=>{});
-}
-
-function nextTrack() { loadTrack((currentTrack+1)%TRACKS.length, isPlaying); }
-function prevTrack() {
-  if(audio.currentTime>3){audio.currentTime=0;return;}
-  loadTrack((currentTrack-1+TRACKS.length)%TRACKS.length, isPlaying);
-}
-// ended handled by shuffle/repeat logic below
-
-function togglePlay() {
-  if(isPlaying){
-    audio.pause(); isPlaying=false; playerEl.classList.remove('playing');
-    iconPlay.innerHTML=PLAY; pillIconPlay.innerHTML=PLAY;
-  } else {
-    audio.play().then(()=>{ isPlaying=true; playerEl.classList.add('playing'); iconPlay.innerHTML=PAUSE; pillIconPlay.innerHTML=PAUSE; document.dispatchEvent(new Event('mainPlayerPlay')); }).catch(()=>{});
-  }
-  updateFreeList();
-  updateMobMp();
-}
-
-function toggleMute() {
-  isMuted=!isMuted; audio.muted=isMuted;
-  volIcon.innerHTML=isMuted?VOL_OFF:VOL_ON;
-  document.getElementById('volSlider').style.opacity=isMuted?'.4':'1';
-}
-function setVolume(v) {
-  audio.volume=parseFloat(v); volIcon.innerHTML=parseFloat(v)===0?VOL_OFF:VOL_ON;
-  if(parseFloat(v)>0&&isMuted){audio.muted=false;isMuted=false;}
-}
-function seekAudio(e) {
-  if(!audio.duration) return;
-  const r=e.currentTarget.getBoundingClientRect();
-  audio.currentTime=((e.clientX-r.left)/r.width)*audio.duration;
-}
-audio.addEventListener('timeupdate',()=>{
-  if(!audio.duration) return;
-  const pct=(audio.currentTime/audio.duration*100)+'%';
-  timelineFill.style.width=pct;
-  timeCurrent.textContent=fmt(audio.currentTime);
-  const mf=document.getElementById('mobMpFill'); if(mf) mf.style.width=pct;
-});
-audio.addEventListener('loadedmetadata',()=>{
-  const d=fmt(audio.duration); timeDuration.textContent=d;
-  const pel=document.getElementById('pdur-'+currentTrack); if(pel) pel.textContent=d;
-  const fel=document.getElementById('fdur-'+currentTrack); if(fel) fel.textContent=d;
-});
-
-function togglePlayerCollapse() {
-  isCollapsed=!isCollapsed; playerEl.classList.toggle('collapsed',isCollapsed);
-  document.getElementById('toggleText').textContent=isCollapsed?'Развернуть':'Свернуть';
-  localStorage.setItem('playerCollapsed',isCollapsed?'1':'0');
-}
-if(localStorage.getItem('playerCollapsed')==='1'){
-  isCollapsed=true; playerEl.classList.add('collapsed');
-  document.getElementById('toggleText').textContent='Развернуть';
-}
-
+// ══════════════════════════════════════════
 // FREE BEATS LIST
+// ══════════════════════════════════════════
 function buildFreeList() {
-  const list=document.getElementById('freeList'); list.innerHTML='';
-  TRACKS.forEach((t,i)=>{
-    const item=document.createElement('div');
-    item.className='free-item'+(i===currentTrack?' active-track':'')+(i===currentTrack&&isPlaying?' is-playing':'');
-    item.id='free-item-'+i;
-    item.innerHTML=`
+  const list = document.getElementById('freeList');
+  list.innerHTML = '';
+  TRACKS.forEach((t, i) => {
+    const item = document.createElement('div');
+    item.className = 'free-item';
+    item.id = 'free-item-' + i;
+    item.innerHTML = `
       <div class="free-item-num">${i+1}</div>
       <div class="free-item-art"><div class="free-item-vinyl" id="fvinyl-${i}"></div></div>
       <div class="free-item-info">
@@ -1200,42 +1315,176 @@ function buildFreeList() {
         <div class="free-item-meta"><span>${t.style}</span><span id="fdur-${i}">—:——</span></div>
       </div>
       <div class="free-item-vis"><div class="free-item-bar"></div><div class="free-item-bar"></div><div class="free-item-bar"></div></div>
-      <button class="free-item-play" id="fplay-${i}" onclick="freePlay(${i},event)">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path style="transform-origin:center;transform:translateX(1px)" d="M8 5v14l11-7z"/></svg>
+      <button class="free-item-play" id="fplay-${i}" onclick="freePlay(${i},event)" aria-label="Play ${t.name}">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
       </button>`;
     list.appendChild(item);
   });
 }
 
-function freePlay(i,e) {
-  e.stopPropagation();
-  if(currentTrack===i){ togglePlay(); return; }
-  loadTrack(i,true);
-}
+function updateFreeListUI() {
+  TRACKS.forEach((_, i) => {
+    const item  = document.getElementById('free-item-' + i);
+    const btn   = document.getElementById('fplay-' + i);
+    if(!item || !btn) return;
 
-function updateFreeList() {
-  TRACKS.forEach((_,i)=>{
-    const item=document.getElementById('free-item-'+i); if(!item) return;
-    item.classList.toggle('active-track',i===currentTrack);
-    item.classList.toggle('is-playing',i===currentTrack&&isPlaying);
-    const btn=document.getElementById('fplay-'+i); if(!btn) return;
-    if(i===currentTrack&&isPlaying){
-      btn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
-    } else {
-      btn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path style="transform:translateX(1px)" d="M8 5v14l11-7z"/></svg>';
-    }
+    const isActive  = i === currentTrack;
+    const isPlaying2 = isActive && isPlaying;
+
+    item.classList.toggle('active-track', isActive);
+    item.classList.toggle('is-playing', isPlaying2);
+
+    btn.innerHTML = isPlaying2
+      ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
   });
 }
 
-buildTrackList();
-buildFreeList();
-loadTrack(0,false);
+function freePlay(i, e) {
+  e.stopPropagation();
+  if(currentTrack === i) {
+    togglePlay();
+  } else {
+    loadTrack(i, true);
+  }
+}
 
+// ══════════════════════════════════════════
+// TRACK LOADING
+// ══════════════════════════════════════════
+function loadTrack(index, autoplay) {
+  currentTrack = index;
+  audio.src = TRACKS[index].file;
+  audio.load();
 
-// ── НОВЫЕ ФИЧИ ──
+  // Reset progress
+  if(timelineFill) timelineFill.style.width = '0%';
+  if(timeCurrent) timeCurrent.textContent = '0:00';
+  if(timeDuration) timeDuration.textContent = '—:——';
+  if(mobMpFill) mobMpFill.style.width = '0%';
 
-// 1. ШАФФЛ + ПОВТОР
-let shuffleMode = false, repeatMode = false;
+  // Track change bounce animation on mini player
+  if(mobMpTrack) {
+    mobMpTrack.classList.remove('track-change-anim');
+    void mobMpTrack.offsetWidth; // reflow
+    mobMpTrack.classList.add('track-change-anim');
+    setTimeout(() => mobMpTrack.classList.remove('track-change-anim'), 400);
+  }
+
+  if(autoplay) {
+    audio.play().then(() => {
+      isPlaying = true;
+      updateAllPlayUI();
+    }).catch(() => {
+      isPlaying = false;
+      updateAllPlayUI();
+    });
+  } else {
+    isPlaying = false;
+    updateAllPlayUI();
+  }
+}
+
+// ══════════════════════════════════════════
+// PLAY / PAUSE — единая точка переключения
+// ══════════════════════════════════════════
+function togglePlay() {
+  if(isPlaying) {
+    audio.pause();
+    isPlaying = false;
+    updateAllPlayUI();
+  } else {
+    // Паузируем флинт-плеер если играет
+    if(smpPlaying) { smpAudio.pause(); smpPlaying = false; smpUpdateUI(); }
+
+    audio.play().then(() => {
+      isPlaying = true;
+      updateAllPlayUI();
+    }).catch(() => {});
+  }
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function nextTrack() {
+  let next;
+  if(shuffleMode) {
+    do { next = Math.floor(Math.random()*TRACKS.length); } while(next===currentTrack && TRACKS.length>1);
+  } else {
+    next = (currentTrack+1) % TRACKS.length;
+  }
+  loadTrack(next, isPlaying);
+}
+
+function prevTrack() {
+  if(audio.currentTime > 3) {
+    audio.currentTime = 0;
+    return;
+  }
+  const prev = (currentTrack-1+TRACKS.length) % TRACKS.length;
+  loadTrack(prev, isPlaying);
+}
+
+audio.addEventListener('ended', () => {
+  if(repeatMode) {
+    audio.currentTime = 0;
+    audio.play().catch(()=>{});
+    return;
+  }
+  nextTrack();
+});
+
+// ══════════════════════════════════════════
+// PROGRESS / TIME
+// ══════════════════════════════════════════
+audio.addEventListener('timeupdate', () => {
+  if(!audio.duration) return;
+  const pct = (audio.currentTime / audio.duration * 100) + '%';
+  if(timelineFill) timelineFill.style.width = pct;
+  if(timeCurrent) timeCurrent.textContent = fmt(audio.currentTime);
+  if(mobMpFill) mobMpFill.style.width = pct;
+});
+
+audio.addEventListener('loadedmetadata', () => {
+  const d = fmt(audio.duration);
+  if(timeDuration) timeDuration.textContent = d;
+  const pel = document.getElementById('pdur-'+currentTrack);
+  if(pel) pel.textContent = d;
+  const fel = document.getElementById('fdur-'+currentTrack);
+  if(fel) fel.textContent = d;
+});
+
+function fmt(s) {
+  if(!s || isNaN(s)) return '0:00';
+  return Math.floor(s/60) + ':' + (Math.floor(s%60)<10?'0':'') + Math.floor(s%60);
+}
+
+function seekAudio(e) {
+  if(!audio.duration) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+}
+
+// ══════════════════════════════════════════
+// VOLUME / MUTE
+// ══════════════════════════════════════════
+function toggleMute() {
+  isMuted = !isMuted;
+  audio.muted = isMuted;
+  if(volIcon) volIcon.innerHTML = isMuted ? ICON_VOL_OFF : ICON_VOL_ON;
+  const vs = document.getElementById('volSlider');
+  if(vs) vs.style.opacity = isMuted ? '.4' : '1';
+}
+function setVolume(v) {
+  audio.volume = parseFloat(v);
+  if(volIcon) volIcon.innerHTML = parseFloat(v)===0 ? ICON_VOL_OFF : ICON_VOL_ON;
+  if(parseFloat(v)>0 && isMuted) { audio.muted=false; isMuted=false; }
+}
+
+// ══════════════════════════════════════════
+// SHUFFLE / REPEAT
+// ══════════════════════════════════════════
 function toggleShuffle() {
   shuffleMode = !shuffleMode;
   if(shuffleMode) repeatMode = false;
@@ -1250,52 +1499,64 @@ function updateModeUI() {
   const sb = document.getElementById('shuffleBtn');
   const rb = document.getElementById('repeatBtn');
   const ml = document.getElementById('modeLabel');
-  const msb = document.getElementById('mobShuffleBtn');
-  const mrb = document.getElementById('mobRepeatBtn');
   if(sb) sb.classList.toggle('active', shuffleMode);
   if(rb) rb.classList.toggle('active', repeatMode);
-  if(msb) msb.classList.toggle('active', shuffleMode);
-  if(mrb) mrb.classList.toggle('active', repeatMode);
-  if(ml) ml.textContent = shuffleMode ? 'Шаффл' : repeatMode ? 'Повтор' : 'По порядку';
+  const lang = localStorage.getItem('lang') || 'ru';
+  const modes = {
+    ru: shuffleMode ? 'Шаффл' : repeatMode ? 'Повтор' : 'По порядку',
+    en: shuffleMode ? 'Shuffle' : repeatMode ? 'Repeat' : 'In order',
+    uk: shuffleMode ? 'Шафл' : repeatMode ? 'Повтор' : 'По порядку'
+  };
+  if(ml) ml.textContent = modes[lang] || 'По порядку';
 }
-// Override nextTrack for shuffle/repeat
-const _origNextTrack = nextTrack;
-// Override ended handler
-audio.removeEventListener('ended', nextTrack);
-audio.addEventListener('ended', () => {
-  if(repeatMode) { audio.currentTime=0; audio.play().catch(()=>{}); return; }
-  if(shuffleMode) {
-    let next; do { next = Math.floor(Math.random()*TRACKS.length); } while(next===currentTrack && TRACKS.length>1);
-    loadTrack(next, true); return;
-  }
-  loadTrack((currentTrack+1)%TRACKS.length, true);
-});
 
-// 2. KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════
+// PLAYER COLLAPSE
+// ══════════════════════════════════════════
+function togglePlayerCollapse() {
+  isCollapsed = !isCollapsed;
+  playerEl.classList.toggle('collapsed', isCollapsed);
+  document.getElementById('toggleText').textContent = isCollapsed ? 'Развернуть' : 'Свернуть';
+  localStorage.setItem('playerCollapsed', isCollapsed?'1':'0');
+}
+if(localStorage.getItem('playerCollapsed')==='1') {
+  isCollapsed = true;
+  playerEl.classList.add('collapsed');
+  document.getElementById('toggleText').textContent = 'Развернуть';
+}
+
+// ══════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════
 document.addEventListener('keydown', e => {
-  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  if(e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA') return;
   if(e.code==='Space') { e.preventDefault(); togglePlay(); }
   if(e.code==='ArrowRight') nextTrack();
-  if(e.code==='ArrowLeft') prevTrack();
+  if(e.code==='ArrowLeft')  prevTrack();
   if(e.key.toLowerCase()==='m') toggleMute();
   if(e.key.toLowerCase()==='s') toggleShuffle();
   resetSleep();
 });
 
-// 3. SHARE САЙТА
+// ══════════════════════════════════════════
+// SHARE
+// ══════════════════════════════════════════
 function sharesite() {
   const url = window.location.href;
   if(navigator.share) {
     navigator.share({ title:'ManewonBeats', url }).catch(()=>{});
   } else {
-    navigator.clipboard.writeText(url).then(()=>{
+    navigator.clipboard.writeText(url).then(() => {
       const t = document.getElementById('shareToast');
-      t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2200);
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
     });
   }
 }
 
-// 4. SLEEP / SCREEN DIM (5 мин неактивности на мобиле)
+// ══════════════════════════════════════════
+// SLEEP OVERLAY
+// ══════════════════════════════════════════
 let sleepTimer;
 function resetSleep() {
   clearTimeout(sleepTimer);
@@ -1303,46 +1564,35 @@ function resetSleep() {
   if(ov) ov.classList.remove('sleeping');
   sleepTimer = setTimeout(() => {
     if(window.innerWidth<=900 && isPlaying) {
-      const ov = document.getElementById('sleep-overlay');
-      if(ov) ov.classList.add('sleeping');
+      document.getElementById('sleep-overlay').classList.add('sleeping');
     }
-  }, 5 * 60 * 1000);
+  }, 5*60*1000);
 }
 function wakeUp() {
-  const ov = document.getElementById('sleep-overlay');
-  if(ov) ov.classList.remove('sleeping');
+  document.getElementById('sleep-overlay').classList.remove('sleeping');
   resetSleep();
 }
-['touchstart','mousemove','click'].forEach(ev => document.addEventListener(ev, resetSleep, { passive:true }));
+['touchstart','mousemove','click'].forEach(ev =>
+  document.addEventListener(ev, resetSleep, { passive:true })
+);
 resetSleep();
 
-// 5. HERO EQ — показывать анимацию в badge когда играет
-function updateHeroEq() {
-  const eq = document.getElementById('heroEq');
-  if(eq) eq.classList.toggle('active', isPlaying);
-}
-// Patch togglePlay to update hero eq
-const _tp = togglePlay;
-// Already defined above, just patch updateMobMp to include heroEq
-const _origUpdateMobMp = updateMobMp;
-
-
-// ── FLINT STYLE MINI PLAYER ──
+// ══════════════════════════════════════════
+// FLINT STYLE MINI PLAYER
+// ══════════════════════════════════════════
 const smpAudio = new Audio('flintstyle.mp3');
 smpAudio.preload = 'metadata';
 let smpPlaying = false;
 
-function smpFmt(s) { if(!s||isNaN(s)) return '0:00'; return Math.floor(s/60)+':'+(Math.floor(s%60)<10?'0':'')+Math.floor(s%60); }
-
 smpAudio.addEventListener('loadedmetadata', () => {
   const d = document.getElementById('smpDur');
-  if(d) d.textContent = smpFmt(smpAudio.duration);
+  if(d) d.textContent = fmt(smpAudio.duration);
 });
 smpAudio.addEventListener('timeupdate', () => {
   const fill = document.getElementById('smpFill');
-  const cur = document.getElementById('smpCur');
-  if(fill && smpAudio.duration) fill.style.width = (smpAudio.currentTime / smpAudio.duration * 100) + '%';
-  if(cur) cur.textContent = smpFmt(smpAudio.currentTime);
+  const cur  = document.getElementById('smpCur');
+  if(fill && smpAudio.duration) fill.style.width = (smpAudio.currentTime/smpAudio.duration*100)+'%';
+  if(cur) cur.textContent = fmt(smpAudio.currentTime);
 });
 smpAudio.addEventListener('ended', () => {
   smpPlaying = false;
@@ -1351,138 +1601,89 @@ smpAudio.addEventListener('ended', () => {
 });
 
 function smpUpdateUI() {
-  const btn = document.getElementById('smpIcon');
-  const wrap = document.getElementById('smpWrap');
+  const icon  = document.getElementById('smpIcon');
+  const wrap  = document.getElementById('smpWrap');
   const vinyl = document.getElementById('smpVinyl');
-  if(btn) btn.innerHTML = smpPlaying
+  if(icon) icon.innerHTML = smpPlaying
     ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'
     : '<path d="M8 5v14l11-7z" style="transform-origin:center;transform:translateX(1px)"/>';
-  if(wrap) wrap.classList.toggle('smp-playing', smpPlaying);
+  if(wrap)  wrap.classList.toggle('smp-playing', smpPlaying);
   if(vinyl) vinyl.style.animation = smpPlaying ? 'spin 3s linear infinite' : 'none';
 }
 
 function smpToggle(e) {
-  e.stopPropagation(); // не триггерить touch-active на карточке
+  e.stopPropagation();
   if(smpPlaying) {
     smpAudio.pause();
     smpPlaying = false;
+    smpUpdateUI();
   } else {
-    // Пауза основного плеера если играет
-    if(isPlaying) { audio.pause(); isPlaying=false; playerEl.classList.remove('playing'); iconPlay.innerHTML=PLAY; pillIconPlay.innerHTML=PLAY; updateFreeList(); updateMobMp(); }
-    smpAudio.play().then(() => { smpPlaying = true; smpUpdateUI(); }).catch(()=>{});
-    return;
+    // Пауза основного плеера
+    if(isPlaying) {
+      audio.pause();
+      isPlaying = false;
+      updateAllPlayUI();
+    }
+    smpAudio.play().then(() => {
+      smpPlaying = true;
+      smpUpdateUI();
+    }).catch(() => {});
   }
-  smpUpdateUI();
 }
 
-// Если основной плеер запускается — пауза флинт плеера
-document.addEventListener('mainPlayerPlay', () => {
-  if(smpPlaying) { smpAudio.pause(); smpPlaying=false; smpUpdateUI(); }
-});
-
-
-// ── I18N / LANGUAGE SWITCHER ──
+// ══════════════════════════════════════════
+// I18N
+// ══════════════════════════════════════════
 let currentLang = localStorage.getItem('lang') || 'ru';
 
 function setLang(lang) {
   currentLang = lang;
   localStorage.setItem('lang', lang);
-
-  // Update all i18n spans
   document.querySelectorAll('.i18n').forEach(el => {
-    const val = el.getAttribute('data-' + lang);
+    const val = el.getAttribute('data-'+lang);
     if(val !== null) el.innerHTML = val;
   });
-
-  // Update button states
   ['ru','en','uk'].forEach(l => {
-    const btn = document.getElementById('lang' + l.charAt(0).toUpperCase() + l.slice(1));
-    if(btn) btn.classList.toggle('active', l === lang);
+    const btn = document.getElementById('lang'+l.charAt(0).toUpperCase()+l.slice(1));
+    if(btn) btn.classList.toggle('active', l===lang);
   });
-
-  // Update FAQ answers too
-  const faqAnswers = {
-    ru: [
-      'Стоимость кастомного бита обговаривается индивидуально и зависит от сложности, стиля и сроков. Пишите в Telegram — обсудим детали и сделаем оффер специально для вас.',
-      'Как правило, кастомный бит готов в течение 24–72 часов после получения всей нужной информации. Срочные заказы обсуждаются отдельно.',
-      'Да! При стандартной и эксклюзивной лицензии предусмотрены правки. Расскажите что хотите изменить — подстроимся под вас.',
-      'Базовая лицензия — MP3 320kbps. Стандарт — WAV + MP3. Эксклюзив — WAV + MP3 + стемы (раздельные дорожки). Все файлы без потерь качества.',
-      'Да, при стандартной и эксклюзивной лицензии монетизация разрешена. Базовая лицензия — только некоммерческое использование.',
-      'Фри биты доступны бесплатно при одном условии — отметь @manewon888 в посте или сторис где используешь бит. Коммерческое использование требует стандартной лицензии.'
-    ],
-    en: [
-      'The price of a custom beat is discussed individually and depends on complexity, style and deadline. Message me on Telegram — we\'ll work out the details and make you an offer.',
-      'A custom beat is usually ready within 24–72 hours after receiving all the necessary info. Rush orders are discussed separately.',
-      'Yes! Standard and exclusive licenses include revisions. Tell me what you want changed — we\'ll make it work.',
-      'Basic license — MP3 320kbps. Standard — WAV + MP3. Exclusive — WAV + MP3 + stems (separate tracks). All files are lossless.',
-      'Yes, monetization is allowed with Standard and Exclusive licenses. Basic license — non-commercial use only.',
-      'Free beats are available at no cost with one condition — tag @manewon888 in the post or story where you use the beat. Commercial use requires a Standard license.'
-    ],
-    uk: [
-      'Вартість кастомного біту обговорюється індивідуально і залежить від складності, стилю та термінів. Пишіть у Telegram — обговоримо деталі і зробимо оффер спеціально для вас.',
-      'Як правило, кастомний біт готовий протягом 24–72 годин після отримання всієї потрібної інформації. Термінові замовлення обговорюються окремо.',
-      'Так! При стандартній та ексклюзивній ліцензії передбачені правки. Розкажіть що хочете змінити — підлаштуємось під вас.',
-      'Базова ліцензія — MP3 320kbps. Стандарт — WAV + MP3. Ексклюзив — WAV + MP3 + стеми (окремі доріжки). Всі файли без втрат якості.',
-      'Так, при стандартній та ексклюзивній ліцензії монетизація дозволена. Базова ліцензія — лише некомерційне використання.',
-      'Фрі біти доступні безкоштовно за однієї умови — відмітьте @manewon888 у пості або сторіс де використовуєте біт. Комерційне використання потребує стандартної ліцензії.'
-    ]
-  };
-
-  const faqAnswerEls = document.querySelectorAll('.faq-a');
-  const answers = faqAnswers[lang];
-  if(answers) {
-    faqAnswerEls.forEach((el, i) => {
-      if(answers[i]) el.innerHTML = answers[i];
-    });
-  }
-
-  // Update player label
-  const playerLabel = document.querySelector('.player-label');
-  if(playerLabel) {
-    const labels = { ru: 'NOW PLAYING', en: 'NOW PLAYING', uk: 'ЗАРАЗ ГРАЄ' };
-    playerLabel.textContent = labels[lang] || 'NOW PLAYING';
-  }
-
-  // Update mode label text
-  const ml = document.getElementById('modeLabel');
-  if(ml) {
-    const modes = {
-      ru: shuffleMode ? 'Шаффл' : repeatMode ? 'Повтор' : 'По порядку',
-      en: shuffleMode ? 'Shuffle' : repeatMode ? 'Repeat' : 'In order',
-      uk: shuffleMode ? 'Шафл' : repeatMode ? 'Повтор' : 'По порядку'
-    };
-    ml.textContent = modes[lang];
-  }
+  updateModeUI();
 }
 
-// Apply saved language on load
-document.addEventListener('DOMContentLoaded', () => {
-  if(currentLang !== 'ru') setLang(currentLang);
-  else {
-    // Just mark the button active
-    const btn = document.getElementById('langRu');
-    if(btn) btn.classList.add('active');
-  }
-});
-// Also run immediately since DOMContentLoaded may have already fired
 if(document.readyState !== 'loading') {
   if(currentLang !== 'ru') setLang(currentLang);
 }
+document.addEventListener('DOMContentLoaded', () => {
+  if(currentLang !== 'ru') setLang(currentLang);
+});
 
-// MARQUEE dup
-const mq=document.getElementById('marquee'); mq.innerHTML+=mq.innerHTML;
+// ══════════════════════════════════════════
+// MARQUEE DUPLICATE
+// ══════════════════════════════════════════
+const mq = document.getElementById('marquee');
+mq.innerHTML += mq.innerHTML;
 
-// Auto-play on first interaction
-let autoTried=false;
-function tryAutoPlay(){
-  if(autoTried||isPlaying) return; autoTried=true;
-  audio.play().then(()=>{ isPlaying=true; playerEl.classList.add('playing'); iconPlay.innerHTML=PAUSE; pillIconPlay.innerHTML=PAUSE; updateFreeList(); updateMobMp(); }).catch(()=>{});
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+buildTrackList();
+buildFreeList();
+loadTrack(0, false);
+
+// ══════════════════════════════════════════
+// AUTO PLAY on first interaction
+// ══════════════════════════════════════════
+let autoTried = false;
+function tryAutoPlay() {
+  if(autoTried || isPlaying) return;
+  autoTried = true;
+  audio.play().then(() => {
+    isPlaying = true;
+    updateAllPlayUI();
+  }).catch(() => {});
 }
-document.addEventListener('click',tryAutoPlay,{once:true});
-document.addEventListener('touchstart',tryAutoPlay,{once:true,passive:true});
+document.addEventListener('click', tryAutoPlay, { once:true });
+document.addEventListener('touchstart', tryAutoPlay, { once:true, passive:true });
 </script>
-<div class="share-toast" id="shareToast">🔗 Ссылка скопирована!</div>
-<div class="keys-hint"><span class="key-badge">Space</span>Play/Pause <span class="key-badge">←</span><span class="key-badge">→</span>Треки <span class="key-badge">M</span>Mute <span class="key-badge">S</span>Шаффл</div>
-<div id="sleep-overlay" onclick="wakeUp()"></div>
 </body>
 </html>
